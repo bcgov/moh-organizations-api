@@ -1,0 +1,17 @@
+### Get token
+POST {{url}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+{{credentials}}
+
+> {% client.global.set("auth_token", response.body.access_token); %}
+
+### Get organizations
+GET http://localhost:8082/organizations
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.test("Returns two organizations", function() {
+  client.assert(response.body.length === 2, "Expected length 2 but was " + response.body.length);
+});
+%}

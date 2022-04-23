@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "base-oauth-url",
+      "type": "java.lang.String",
+      "description": "The Keycloak realm that issues tokens accepted by this resource server."
+  }
+] }
