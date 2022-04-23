@@ -40,6 +40,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Added to use WebTestClient in tests-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- https://www.mdoninger.de/2015/05/16/completion-for-custom-properties-in-spring-boot.html -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
