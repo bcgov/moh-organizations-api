@@ -3,14 +3,14 @@ package ca.bc.hlth.mohorganizations;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.io.IOException;
@@ -18,8 +18,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class OrganizationsControllerTest {
 
     Logger logger = LoggerFactory.getLogger(OrganizationsControllerTest.class);
@@ -40,8 +44,11 @@ class OrganizationsControllerTest {
     @Autowired
     private WebTestClient webClient;
 
-    @BeforeEach
-    public void init() {
+    private String accessToken;
+
+    @BeforeAll
+    public void init() throws IOException, ParseException, InterruptedException {
+        accessToken = getKcAccessToken();
         urlUnderTest = "http://localhost:" + port + "/organizations";
 //        urlUnderTest = "https://common-logon-dev.hlth.gov.bc.ca/ldap/users";
     }
@@ -52,16 +59,44 @@ class OrganizationsControllerTest {
     }
 
     @Test
-    public void testGetOrganizations_withToken_getOrganizations() throws Exception {
+    public void testGetOrganizations_withToken_getOrganizations() {
 
-        String accessToken = getKcAccessToken();
+        Map<String, String> org = new HashMap<>();
+        org.put("id", "00000010");
+        org.put("name", "MoH");
 
         webClient.get()
                 .uri(urlUnderTest)
                 .header("Authorization", "Bearer " + accessToken)
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isOk()
+                .expectBodyList(Map.class).contains(org);
     }
+
+    @Test
+    public void testPostOrganizations_withToken_newOrganization() {
+
+        Map<String, String> org = new HashMap<>();
+        org.put("id", "00000020");
+        org.put("name", "Some New Organization");
+
+        webClient.post()
+                .uri(urlUnderTest)
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(org)
+                .exchange()
+                .expectStatus().isOk();
+
+        webClient.get()
+                .uri(urlUnderTest)
+                .header("Authorization", "Bearer " + accessToken)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Map.class).contains(org);
+    }
+
 
     private String getKcAccessToken() throws IOException, InterruptedException, ParseException {
 
