@@ -1,4 +1,11 @@
 spring:
+  datasource:
+    url: jdbc:h2:./test;AUTO_SERVER=TRUE
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
   security:
     oauth2:
       resourceserver:
@@ -9,3 +16,4 @@ server:
   port: 8082
 #base-oauth-url: http://localhost:8080/realms/master
 base-oauth-url: https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications
+
