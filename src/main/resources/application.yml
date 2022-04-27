@@ -16,4 +16,4 @@ server:
   port: 8082
 #base-oauth-url: http://localhost:8080/realms/master
 base-oauth-url: https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications
-
+organization-api-client-id: ORGANIZATIONS-API
