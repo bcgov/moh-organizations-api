@@ -1,12 +1,16 @@
 package ca.bc.hlth.mohorganizations;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Collection;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 public class OrganizationsController {
@@ -23,8 +27,20 @@ public class OrganizationsController {
     }
 
     @PostMapping(value = "/organizations", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void addOrganization(@RequestBody Organization organization) {
+    public ResponseEntity<Object> addOrganization(@RequestBody Organization organization) {
+        if (organizationRepository.findByOrganizationId(organization.getOrganizationId()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Organization with given ID already exists.");
+        } else {
+            // This is a new organization, so generate a resource identifier.
+            organization.setResourceId(UUID.randomUUID().toString());
+        }
         organizationRepository.save(organization);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(organization.getResourceId())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 
 }

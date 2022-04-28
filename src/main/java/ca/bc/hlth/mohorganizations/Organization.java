@@ -3,15 +3,13 @@ package ca.bc.hlth.mohorganizations;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Organization {
 
     @JsonProperty("id")
+    @Column(unique = true)
     private String organizationId;
     @JsonProperty("name")
     private String organizationName;
@@ -19,6 +17,8 @@ public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(updatable = false, nullable = false)
+    private String resourceId;
 
     public Organization() {
     }
@@ -26,6 +26,17 @@ public class Organization {
     public Organization(String id, String name) {
         this.organizationId = id;
         this.organizationName = name;
+    }
+
+    public String getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(String resourceId) {
+        if (this.resourceId != null) {
+            throw new IllegalStateException("Organization already has a resourceId");
+        }
+        this.resourceId = resourceId;
     }
 
     public String getOrganizationId() {
