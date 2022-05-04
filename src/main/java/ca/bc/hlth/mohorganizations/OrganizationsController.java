@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -21,26 +20,45 @@ public class OrganizationsController {
         this.organizationRepository = organizationRepository;
     }
 
+    @GetMapping(value = "/organizations/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Organization> getOrganizationById(@PathVariable String id) {
+        return organizationRepository.findByResourceId(id)
+                .map((ResponseEntity::ok))
+                .orElseGet(() -> ResponseEntity.of(Optional.empty()));
+    }
+
     @GetMapping(value = "/organizations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Collection<?> getOrganizations() {
+    public Collection<Organization> getOrganizations() {
         return organizationRepository.findAll();
     }
 
-    @PostMapping(value = "/organizations", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/organizations", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> addOrganization(@RequestBody Organization organization) {
-        if (organizationRepository.findByOrganizationId(organization.getOrganizationId()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Organization with given ID already exists.");
-        } else {
-            // This is a new organization, so generate a resource identifier.
-            organization.setResourceId(UUID.randomUUID().toString());
-        }
-        organizationRepository.save(organization);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(organization.getResourceId())
-                .toUri();
-        return ResponseEntity.created(location).build();
+        return organizationRepository.findByOrganizationId(organization.getOrganizationId())
+                .map(existingOrganization -> ResponseEntity.status(HttpStatus.CONFLICT).build()
+                ).orElseGet(() -> {
+                    // This is a new organization, so generate a resource identifier.
+                    organization.setResourceId(UUID.randomUUID().toString());
+                    organizationRepository.save(organization);
+                    URI location = ServletUriComponentsBuilder
+                            .fromCurrentRequest()
+                            .path("/{id}")
+                            .buildAndExpand(organization.getResourceId())
+                            .toUri();
+                    return ResponseEntity.created(location).build();
+                });
+    }
+
+    @PutMapping(value = "/organizations/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> putOrganization(@RequestBody Organization updatedOrganization, @PathVariable String id) {
+        return organizationRepository.findByOrganizationId(updatedOrganization.getOrganizationId())
+                .map(existingOrganization -> {
+                    existingOrganization.setOrganizationId(updatedOrganization.getOrganizationId());
+                    existingOrganization.setOrganizationName(updatedOrganization.getOrganizationName());
+                    organizationRepository.save(existingOrganization);
+                    return ResponseEntity.ok().build();
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
 }

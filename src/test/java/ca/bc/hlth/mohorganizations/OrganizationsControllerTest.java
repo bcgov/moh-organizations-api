@@ -1,5 +1,6 @@
 package ca.bc.hlth.mohorganizations;
 
+import com.sun.xml.bind.v2.TODO;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -54,7 +55,7 @@ class OrganizationsControllerTest {
 //        urlUnderTest = "https://common-logon-dev.hlth.gov.bc.ca/ldap/users";
     }
 
-    @DisplayName("GET /organizations without a token should result in HTTP 403 (Unauthorized)")
+    @DisplayName("GET without a token should result in HTTP 403 (Unauthorized)")
     @Test
     public void testGetOrganizations_noToken_unauthorized() {
         webClient.get()
@@ -63,7 +64,7 @@ class OrganizationsControllerTest {
                 .expectStatus().isUnauthorized();
     }
 
-    @DisplayName("GET /organizations should return all organizations")
+    @DisplayName("GET should return all organizations")
     @Test
     public void testGetOrganizations_withToken_getOrganizations() {
 
@@ -72,10 +73,30 @@ class OrganizationsControllerTest {
         org.put("name", "MoH");
         org.put("resourceId", "resource1");
 
-        getOrgs()
+        getOrganizations()
                 .expectStatus().isOk()
                 .expectBodyList(Map.class).contains(org);
     }
+
+    @DisplayName("GET with a known resource ID should return the organization")
+    @Test
+    public void testGetOrganizations_withResourceId() {
+        String knownResourceId = "resource1";
+        getOrganization(knownResourceId)
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<Map<String, String>>() {
+                })
+                .consumeWith(o -> {
+                            String actualId = o.getResponseBody().get("id");
+                            Assertions.assertEquals("00000010", actualId);
+                        }
+                );
+    }
+
+    // TODO Get with a resource ID that does not exist should return a 404
+    // TODO Check all resources for token requirement
+    // TODO requests.http Get by resource ID
+
 
     @DisplayName("POST should create a new organization")
     @Test
@@ -91,7 +112,7 @@ class OrganizationsControllerTest {
                 .expectBody().isEmpty();
 
 
-        getOrgs()
+        getOrganizations()
                 .expectStatus().isOk()
                 .expectBodyList(new ParameterizedTypeReference<Map<String, String>>() {
                 })
@@ -122,7 +143,7 @@ class OrganizationsControllerTest {
 
         String location = path.substring(path.lastIndexOf('/') + 1);
 
-        Object resourceId = getOrgs()
+        Object resourceId = getOrganizations()
                 .expectStatus().isOk()
                 .expectBodyList(Map.class)
                 .returnResult().getResponseBody()
@@ -150,9 +171,72 @@ class OrganizationsControllerTest {
 
     }
 
-    private WebTestClient.ResponseSpec getOrgs() {
+    @DisplayName("PUT should update an existing organization")
+    @Test
+    public void testPutOrganizations_updateOrg() {
+
+        Map<String, String> org = new HashMap<>();
+        org.put("id", "00000020");
+        org.put("name", "Some New Organization");
+
+        String path = addOrg(org)
+                .expectStatus().isCreated()
+                .expectBody().isEmpty()
+                .getResponseHeaders()
+                .getLocation().getPath();
+
+        String resourceId = path.substring(path.lastIndexOf('/') + 1);
+
+        String expectedName = "A Brand New Name";
+        org.put("name", expectedName);
+
+        putOrg(org, resourceId)
+                .expectStatus().isOk();
+
+        Object actualName = getOrganizations()
+                .expectStatus().isOk()
+                .expectBodyList(Map.class)
+                .returnResult().getResponseBody()
+                .stream()
+                .filter(o -> o.get("id").equals("00000020"))
+                .findFirst().get()
+                .get("name");
+
+        Assertions.assertEquals(expectedName, actualName);
+    }
+
+    @DisplayName("PUT should return a 404 if the organization does not exist")
+    @Test
+    public void testPutOrganization_doesNotExist_404() {
+
+        Map<String, String> org = new HashMap<>();
+        org.put("id", "00000020");
+        org.put("name", "Some New Organization");
+
+        putOrg(org, "some-id-that-does-not-exist")
+                .expectStatus().isNotFound();
+    }
+
+    private WebTestClient.ResponseSpec putOrg(Map<String, String> org, String location) {
+        return webClient.put()
+                .uri(urlUnderTest + "/{resource-id}", location)
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(org)
+                .exchange();
+    }
+
+    private WebTestClient.ResponseSpec getOrganizations() {
         return webClient.get()
                 .uri(urlUnderTest)
+                .header("Authorization", "Bearer " + accessToken)
+                .exchange();
+    }
+
+    private WebTestClient.ResponseSpec getOrganization(String knownResourceId) {
+        return webClient.get()
+                .uri(urlUnderTest + "/{resource-id}", knownResourceId)
                 .header("Authorization", "Bearer " + accessToken)
                 .exchange();
     }
