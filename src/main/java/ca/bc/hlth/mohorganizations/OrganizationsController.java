@@ -51,7 +51,7 @@ public class OrganizationsController {
 
     @PutMapping(value = "/organizations/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> putOrganization(@RequestBody Organization updatedOrganization, @PathVariable String id) {
-        return organizationRepository.findByOrganizationId(updatedOrganization.getOrganizationId())
+        return organizationRepository.findByResourceId(id)
                 .map(existingOrganization -> {
                     existingOrganization.setOrganizationId(updatedOrganization.getOrganizationId());
                     existingOrganization.setOrganizationName(updatedOrganization.getOrganizationName());

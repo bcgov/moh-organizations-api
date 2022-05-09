@@ -93,11 +93,6 @@ class OrganizationsControllerTest {
                 );
     }
 
-    // TODO Get with a resource ID that does not exist should return a 404
-    // TODO Check all resources for token requirement
-    // TODO requests.http Get by resource ID
-
-
     @DisplayName("POST should create a new organization")
     @Test
     public void testPostOrganizations_newOrganization() {
@@ -210,10 +205,10 @@ class OrganizationsControllerTest {
     public void testPutOrganization_doesNotExist_404() {
 
         Map<String, String> org = new HashMap<>();
-        org.put("id", "00000020");
+        org.put("id", "00000010");
         org.put("name", "Some New Organization");
 
-        putOrg(org, "some-id-that-does-not-exist")
+        putOrg(org, "some-resource-id-that-does-not-exist")
                 .expectStatus().isNotFound();
     }
 

@@ -6,8 +6,12 @@ Content-Type: application/x-www-form-urlencoded
 
 > {% client.global.set("auth_token", response.body.access_token); %}
 
-###
-POST http://localhost:8082/organizations
+### Get all organizations.
+GET {{api}}
+Authorization: Bearer {{auth_token}}
+
+### Add an organization. Location response header will contain the new resource ID.
+POST {{api}}
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
@@ -16,13 +20,14 @@ Content-Type: application/json
   "name": "Hi Mom"
 }
 
-###
-GET {{api}}
+### Get an organization.
+GET {{api}}/300d010c-6952-4da6-ac18-7dada4c552b9
 Authorization: Bearer {{auth_token}}
 
-### Get organizations
-PUT http://localhost:8082/organizations/3cb37614-4d0a-49e4-9275-5f5925688c4e
+### Update an organization. The resource ID must exist.
+PUT {{api}}/3cb37614-4d0a-49e4-9275-5f5925688c4e
 Authorization: Bearer {{auth_token}}
+Content-Type: application/json
 
 {
   "id": "12345678",
