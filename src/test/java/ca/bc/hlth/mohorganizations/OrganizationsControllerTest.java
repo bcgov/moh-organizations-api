@@ -250,6 +250,7 @@ class OrganizationsControllerTest {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
+                // TODO: The URL should not be hardcoded, or at least it should not be buried down here.
                 .uri(URI.create("https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications/protocol/openid-connect/token"))
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/x-www-form-urlencoded")
