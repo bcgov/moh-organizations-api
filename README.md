@@ -1,4 +1,4 @@
-# Organizations API [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md) [![Java CI with Maven](https://github.com/sharpedavid/organizations-api/actions/workflows/maven.yml/badge.svg)](https://github.com/sharpedavid/organizations-api/actions/workflows/maven.yml)
+# MoH Organizations API [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md) [![Java CI with Maven](https://github.com/sharpedavid/organizations-api/actions/workflows/maven.yml/badge.svg)](https://github.com/sharpedavid/organizations-api/actions/workflows/maven.yml)
 
 A Spring Boot REST API for managing organizations within the Ministry of Health.
 
