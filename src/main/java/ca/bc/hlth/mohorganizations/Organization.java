@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 public class Organization {
 
-    @JsonProperty("id")
+    @JsonProperty("organizationId")
     @Column(unique = true)
     private String organizationId;
     @JsonProperty("name")

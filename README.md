@@ -70,12 +70,12 @@ RESPONSE: HTTP 200
 [
   {
     "resourceId": "resource1",
-    "id": "00000010",
+    "organizationId": "00000010",
     "name": "MoH"
   },
   {
     "resourceId": "resource2",
-    "id": "00002855",
+    "organizationId": "00002855",
     "name": "Other"
   }
 ]
@@ -91,7 +91,7 @@ Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "id": "12345678",
+  "organizationId": "12345678",
   "name": "Hi Mom"
 }
 
@@ -110,7 +110,7 @@ Authorization: Bearer {{auth_token}}
 RESPONSE: HTTP 200
 {
   "resourceId": "fd5186d7-649e-486d-acce-38b5fd30c1dd",
-  "id": "12345670",
+  "organizationId": "12345670",
   "name": "Hi Mom"
 }
 ```
@@ -128,7 +128,7 @@ Content-Type: application/json
 
 RESPONSE: HTTP 200
 {
-  "id": "12345678",
+  "organizationId": "12345678",
   "name": "Hi Dad"
 }
 ```
@@ -137,18 +137,18 @@ RESPONSE: HTTP 200
 
 #### Organization
 
-| Parameter    | Type     | Description              |
-| ------------ | -------- | ------------------------ |
-| `id`         | `string` | _Unique, Required_       |
-| `name`       | `string` | _Optional_               |
-| `resourceId` | `string` | _Generated, Immutable_   |
+| Parameter        | Type     | Description            |
+| ---------------- | -------- | ---------------------- |
+| `organizationId` | `string` | _Unique, Required_     |
+| `name`           | `string` | _Optional_             |
+| `resourceId`     | `string` | _Generated, Immutable_ |
 
 Example:
 
 ```json
 {
   "resourceId": "f69de397-d3eb-4db6-be26-083ca89c05e7",
-  "id": "12345678",
+  "organizationId": "12345678",
   "name": "Test Name"
 }
 ```

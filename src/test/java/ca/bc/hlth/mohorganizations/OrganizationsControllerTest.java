@@ -69,7 +69,7 @@ class OrganizationsControllerTest {
     public void testGetOrganizations_withToken_getOrganizations() {
 
         Map<String, String> org = new HashMap<>();
-        org.put("id", "00000010");
+        org.put("organizationId", "00000010");
         org.put("name", "MoH");
         org.put("resourceId", "resource1");
 
@@ -87,7 +87,7 @@ class OrganizationsControllerTest {
                 .expectBody(new ParameterizedTypeReference<Map<String, String>>() {
                 })
                 .consumeWith(o -> {
-                            String actualId = o.getResponseBody().get("id");
+                            String actualId = o.getResponseBody().get("organizationId");
                             Assertions.assertEquals("00000010", actualId);
                         }
                 );
@@ -98,7 +98,7 @@ class OrganizationsControllerTest {
     public void testPostOrganizations_newOrganization() {
 
         Map<String, String> org = new HashMap<>();
-        org.put("id", "00000020");
+        org.put("organizationId", "00000020");
         org.put("name", "Some New Organization");
 
         addOrg(org)
@@ -114,7 +114,7 @@ class OrganizationsControllerTest {
                 .consumeWith(l -> {
                             List<Map<String, String>> orgs = l.getResponseBody();
                             long count = orgs.stream()
-                                    .filter(o -> o.get("id").equals("00000020") && o.get("name").equals("Some New Organization"))
+                                    .filter(o -> o.get("organizationId").equals("00000020") && o.get("name").equals("Some New Organization"))
                                     .count();
                             Assertions.assertEquals(1, count);
                         }
@@ -126,7 +126,7 @@ class OrganizationsControllerTest {
     public void testPostOrganizations_locationHeaderMatchesResourceId() {
 
         Map<String, String> org = new HashMap<>();
-        org.put("id", "00000020");
+        org.put("organizationId", "00000020");
         org.put("name", "Some New Organization");
 
         @SuppressWarnings("ConstantConditions")
@@ -143,7 +143,7 @@ class OrganizationsControllerTest {
                 .expectBodyList(Map.class)
                 .returnResult().getResponseBody()
                 .stream()
-                .filter(o -> o.get("id").equals("00000020"))
+                .filter(o -> o.get("organizationId").equals("00000020"))
                 .findFirst().get()
                 .get("resourceId");
 
@@ -155,7 +155,7 @@ class OrganizationsControllerTest {
     public void testPostOrganizations_twice_conflict() {
 
         Map<String, String> org = new HashMap<>();
-        org.put("id", "00000020");
+        org.put("organizationId", "00000020");
         org.put("name", "Some New Organization");
 
         addOrg(org)
@@ -171,7 +171,7 @@ class OrganizationsControllerTest {
     public void testPutOrganizations_updateOrg() {
 
         Map<String, String> org = new HashMap<>();
-        org.put("id", "00000020");
+        org.put("organizationId", "00000020");
         org.put("name", "Some New Organization");
 
         String path = addOrg(org)
@@ -193,7 +193,7 @@ class OrganizationsControllerTest {
                 .expectBodyList(Map.class)
                 .returnResult().getResponseBody()
                 .stream()
-                .filter(o -> o.get("id").equals("00000020"))
+                .filter(o -> o.get("organizationId").equals("00000020"))
                 .findFirst().get()
                 .get("name");
 
@@ -205,7 +205,7 @@ class OrganizationsControllerTest {
     public void testPutOrganization_doesNotExist_404() {
 
         Map<String, String> org = new HashMap<>();
-        org.put("id", "00000010");
+        org.put("organizationId", "00000010");
         org.put("name", "Some New Organization");
 
         putOrg(org, "some-resource-id-that-does-not-exist")
