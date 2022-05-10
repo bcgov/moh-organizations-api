@@ -23,4 +23,6 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
+      env: 
+        ORGANIZATIONS_API_TOKEN_CREDENTIALS: ${{ secrets.ORGANIZATIONS_API_TOKEN_CREDENTIALS }}
       run: mvn -B package --file pom.xml
