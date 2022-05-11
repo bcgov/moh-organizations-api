@@ -1,6 +1,5 @@
 package ca.bc.hlth.mohorganizations;
 
-import com.sun.xml.bind.v2.TODO;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -37,6 +36,8 @@ class OrganizationsControllerTest {
     // e.g. client_id=admin-cli&username=admin&password=admin&grant_type=some_password
     @Value("${ORGANIZATIONS_API_TOKEN_CREDENTIALS}")
     private String credentials;
+    @Value("${ORGANIZATIONS_API_TOKEN_URL}")
+    private String tokenUrl;
 
     @LocalServerPort
     private int port;
@@ -200,6 +201,29 @@ class OrganizationsControllerTest {
         Assertions.assertEquals(expectedName, actualName);
     }
 
+    @DisplayName("PUT should not update the resource ID")
+    @Test
+    public void testPutOrganizations_updateResourceId_ignore() {
+
+        Map<String, String> org = new HashMap<>();
+        org.put("organizationId", "00000020");
+        org.put("name", "Some New Organization");
+        org.put("resourceId", "newResourceId");
+
+        // The controller will ignore the new resource ID.
+        putOrg(org, "resource1")
+                .expectStatus().isOk();
+
+        getOrganizations()
+                .expectBodyList(new ParameterizedTypeReference<Map<String, String>>() {
+                })
+                .hasSize(2)
+                .consumeWith(orgs -> {
+                    long count = orgs.getResponseBody().stream().filter(o -> !o.get("resourceId").equals("newResourceId")).count();
+                    Assertions.assertEquals(2, count);
+                });
+    }
+
     @DisplayName("PUT should return a 404 if the organization does not exist")
     @Test
     public void testPutOrganization_doesNotExist_404() {
@@ -251,7 +275,7 @@ class OrganizationsControllerTest {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 // TODO: The URL should not be hardcoded, or at least it should not be buried down here.
-                .uri(URI.create("https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications/protocol/openid-connect/token"))
+                .uri(URI.create(tokenUrl))
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .POST(HttpRequest.BodyPublishers.ofString(credentials))

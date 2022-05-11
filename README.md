@@ -122,7 +122,7 @@ Requires a token with `add-org`.
 The resource ID must exist.
 
 ```http
-PUT {{api}}/{{resource-id}}
+PUT /organizations/{{resource-id}}
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 

@@ -20,9 +20,9 @@ public class OrganizationsController {
         this.organizationRepository = organizationRepository;
     }
 
-    @GetMapping(value = "/organizations/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Organization> getOrganizationById(@PathVariable String id) {
-        return organizationRepository.findByResourceId(id)
+    @GetMapping(value = "/organizations/{resourceId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Organization> getOrganizationById(@PathVariable String resourceId) {
+        return organizationRepository.findByResourceId(resourceId)
                 .map((ResponseEntity::ok))
                 .orElseGet(() -> ResponseEntity.of(Optional.empty()));
     }
@@ -42,16 +42,16 @@ public class OrganizationsController {
                     organizationRepository.save(organization);
                     URI location = ServletUriComponentsBuilder
                             .fromCurrentRequest()
-                            .path("/{id}")
+                            .path("/{resourceId}")
                             .buildAndExpand(organization.getResourceId())
                             .toUri();
                     return ResponseEntity.created(location).build();
                 });
     }
 
-    @PutMapping(value = "/organizations/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> putOrganization(@RequestBody Organization updatedOrganization, @PathVariable String id) {
-        return organizationRepository.findByResourceId(id)
+    @PutMapping(value = "/organizations/{resourceId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> putOrganization(@RequestBody Organization updatedOrganization, @PathVariable String resourceId) {
+        return organizationRepository.findByResourceId(resourceId)
                 .map(existingOrganization -> {
                     existingOrganization.setOrganizationId(updatedOrganization.getOrganizationId());
                     existingOrganization.setOrganizationName(updatedOrganization.getOrganizationName());

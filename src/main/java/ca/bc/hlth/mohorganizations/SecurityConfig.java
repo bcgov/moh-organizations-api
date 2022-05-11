@@ -25,9 +25,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 .mvcMatchers(HttpMethod.GET, "/organizations").hasRole("get-org")
-                .mvcMatchers(HttpMethod.GET, "/organizations/{id}").hasRole("get-org")
+                .mvcMatchers(HttpMethod.GET, "/organizations/{resourceId}").hasRole("get-org")
                 .mvcMatchers(HttpMethod.POST, "/organizations").hasRole("add-org")
-                .mvcMatchers(HttpMethod.PUT, "/organizations/{id}").hasRole("add-org")
+                .mvcMatchers(HttpMethod.PUT, "/organizations/{resourceId}").hasRole("add-org")
                 .anyRequest().denyAll()
                 .and().cors()
                 .and().oauth2ResourceServer().jwt()
