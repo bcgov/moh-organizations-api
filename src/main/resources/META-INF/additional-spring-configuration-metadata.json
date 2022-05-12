@@ -9,5 +9,15 @@
       "name": "organization-api-client-id",
       "type": "java.lang.String",
       "description": "The Keycloak client ID of this bearer-only client."
+    },
+    {
+      "name": "ORGANIZATIONS_API_TOKEN_URL",
+      "type": "java.lang.String",
+      "description": "FOR TESTS ONLY. The URL of the token issuer."
+    },
+    {
+      "name": "ORGANIZATIONS_API_TOKEN_CREDENTIALS",
+      "type": "java.lang.String",
+      "description": "FOR TESTS ONLY. Credentials for the integration test client."
     }
   ] }

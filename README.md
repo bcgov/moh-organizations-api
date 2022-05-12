@@ -12,18 +12,6 @@ Application configuration is specified in [application.yml](src/main/resources/a
 * `organization-api-client-id`: the client ID of this bearer-only client, used for `aud` validation. The client is
   expected to have `add-org` and `get-org` roles.
 
-## Environment variables
-
-The application does not use environment variables, but to run the integration tests you will need to provide
-credentials for the token issuer.
-
-`ORGANIZATIONS_API_TOKEN_CREDENTIALS`
-
-Example values:
-
-* `client_id=SOME_CLIENT&client_secret=SOME_SECRET&grant_type=client_credentials`
-* `client_id=SOME_CLIENT&username=SOME_USER&password=SOME_PASSWORD&grant_type=password`
-
 ## Run Locally
 
 To run with Maven:
@@ -46,9 +34,23 @@ mvn package -DskipTests=true
 java -jar target/organizations-api.jar
 ```
 
+## Environment variables
+
+The application does not use environment variables, but to run the integration tests you will need to provide
+credentials for the token issuer.
+
+`ORGANIZATIONS_API_TOKEN_CREDENTIALS`
+
+Example values:
+
+* `client_id=SOME_CLIENT&client_secret=SOME_SECRET&grant_type=client_credentials`
+* `client_id=SOME_CLIENT&username=SOME_USER&password=SOME_PASSWORD&grant_type=password`
+
+The token issuer is specified by `ORGANIZATIONS_API_TOKEN_URL` in [application-test.yml](src\test\resources\application-test.yml).
+
 ## Running Tests
 
-To run just the tests:
+To run just the tests, execute:
 
 ```bash
 mvn test
