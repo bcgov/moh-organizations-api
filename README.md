@@ -46,7 +46,7 @@ Example values:
 * `client_id=SOME_CLIENT&client_secret=SOME_SECRET&grant_type=client_credentials`
 * `client_id=SOME_CLIENT&username=SOME_USER&password=SOME_PASSWORD&grant_type=password`
 
-The token issuer is specified by `ORGANIZATIONS_API_TOKEN_URL` in [application-test.yml](src\test\resources\application-test.yml).
+The token issuer is specified by `ORGANIZATIONS_API_TOKEN_URL` in [application-test.yml](src/test/resources/application-test.yml).
 
 ## Running Tests
 
