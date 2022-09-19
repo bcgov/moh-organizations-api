@@ -16,16 +16,16 @@ Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "id": "12345678",
-  "name": "Hi Mom"
+  "organizationId": "1130",
+  "name": "Yet another one"
 }
 
 ### Get an organization.
-GET {{api}}/300d010c-6952-4da6-ac18-7dada4c552b9
+GET {{api}}/130
 Authorization: Bearer {{auth_token}}
 
 ### Update an organization. The resource ID must exist.
-PUT {{api}}/3cb37614-4d0a-49e4-9275-5f5925688c4e
+PUT {{api}}/9631a9ae-fd44-408a-8df6-3904d403dada
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 

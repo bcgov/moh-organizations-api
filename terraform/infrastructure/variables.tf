@@ -57,7 +57,7 @@ variable "container_name" {
 
 variable "health_check_path" {
   ## TODO: Document this
-  default = "/greeting"
+  default = "/health"
   ## END TODO
 #  default = "/"
 }

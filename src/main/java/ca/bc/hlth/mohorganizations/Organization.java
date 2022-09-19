@@ -1,24 +1,18 @@
 package ca.bc.hlth.mohorganizations;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.*;
-
-@Entity
+@DynamoDBTable(tableName = "Organization")
 public class Organization {
 
+    @DynamoDBHashKey(attributeName = "id")
     @JsonProperty("organizationId")
-    @Column(unique = true)
     private String organizationId;
     @JsonProperty("name")
     private String organizationName;
-    @JsonIgnore
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(updatable = false, nullable = false)
-    private String resourceId;
 
     public Organization() {
     }
@@ -28,17 +22,7 @@ public class Organization {
         this.organizationName = name;
     }
 
-    public String getResourceId() {
-        return resourceId;
-    }
-
-    public void setResourceId(String resourceId) {
-        if (this.resourceId != null) {
-            throw new IllegalStateException("Organization already has a resourceId");
-        }
-        this.resourceId = resourceId;
-    }
-
+    @DynamoDBAttribute
     public String getOrganizationId() {
         return organizationId;
     }
@@ -47,6 +31,7 @@ public class Organization {
         this.organizationId = id;
     }
 
+    @DynamoDBAttribute
     public String getOrganizationName() {
         return organizationName;
     }
@@ -55,11 +40,4 @@ public class Organization {
         this.organizationName = name;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
 }

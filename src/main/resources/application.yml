@@ -6,6 +6,11 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
   security:
     oauth2:
       resourceserver:
@@ -13,7 +18,13 @@ spring:
           issuer-uri: ${base-oauth-url}
           jwk-set-uri: ${base-oauth-url}/protocol/openid-connect/certs
 server:
-  port: 8082
+  port: 80
 #base-oauth-url: http://localhost:8080/realms/master
 base-oauth-url: https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications
 organization-api-client-id: ORGANIZATIONS-API
+amazon:
+  dynamodb:
+    endpoint: http://localhost:8000/
+  aws:
+    accesskey: key
+    secretkey: key2
