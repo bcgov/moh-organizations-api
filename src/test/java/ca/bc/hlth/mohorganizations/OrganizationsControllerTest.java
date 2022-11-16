@@ -1,5 +1,14 @@
 package ca.bc.hlth.mohorganizations;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
+import com.amazonaws.services.dynamodbv2.local.main.ServerRunner;
+import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
+import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
+import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -12,7 +21,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.io.IOException;
@@ -27,9 +35,8 @@ import java.util.Map;
 @SuppressWarnings({"ConstantConditions", "OptionalGetWithoutIsPresent"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Sql(value = {"/loadTestData.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+// TODO: Look up how this works. Is "test" a default profile? Without it, it didn't load the config file.
 @ActiveProfiles("test")
-@Disabled
 class OrganizationsControllerTest {
 
     private static final JSONParser jsonParser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
@@ -52,8 +59,52 @@ class OrganizationsControllerTest {
 
     private String accessToken;
 
+    private static DynamoDBMapper dynamoDBMapper;
+
+    // https://www.baeldung.com/dynamodb-local-integration-tests
+    static {
+        System.setProperty("sqlite4java.library.path", "native-libs");
+        String port = "8000";
+        try {
+            DynamoDBProxyServer server = ServerRunner.createServerFromCommandLineArgs(
+                    new String[]{"-inMemory", "-port", port});
+            server.start();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        String amazonAWSAccessKey = "access_key";
+        String amazonAWSSecretKey = "secret_key";
+        String amazonDynamoDBEndpoint = "http://localhost:8000/";
+
+        AmazonDynamoDBClient amazonDynamoDB = new AmazonDynamoDBClient(new BasicAWSCredentials(amazonAWSAccessKey, amazonAWSSecretKey));
+        amazonDynamoDB.setEndpoint(amazonDynamoDBEndpoint);
+        dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
+
+        CreateTableRequest tableRequest = dynamoDBMapper.generateCreateTableRequest(Organization.class);
+        tableRequest.setProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
+        amazonDynamoDB.createTable(tableRequest);
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+        Organization organization = new Organization("00000010", "MoH");
+        dynamoDBMapper.save(organization);
+        Organization organization2 = new Organization("00002855", "other");
+        dynamoDBMapper.save(organization2);
+    }
+
+    @AfterEach
+    public void afterEach() {
+        PaginatedScanList<Organization> scan = dynamoDBMapper.scan(Organization.class, new DynamoDBScanExpression());
+        dynamoDBMapper.batchDelete(scan);
+    }
+
+
     @BeforeAll
-    public void init() throws IOException, ParseException, InterruptedException {
+    public void init() throws Exception {
         accessToken = getKcAccessToken();
         urlUnderTest = "http://localhost:" + port + "/organizations";
 //        urlUnderTest = "https://common-logon-dev.hlth.gov.bc.ca/ldap/users";
@@ -75,7 +126,6 @@ class OrganizationsControllerTest {
         Map<String, String> org = new HashMap<>();
         org.put("organizationId", "00000010");
         org.put("name", "MoH");
-        org.put("resourceId", "resource1");
 
         getOrganizations()
                 .expectStatus().isOk()
@@ -85,7 +135,7 @@ class OrganizationsControllerTest {
     @DisplayName("GET with a known resource ID should return the organization")
     @Test
     public void testGetOrganizations_withResourceId() {
-        String knownResourceId = "resource1";
+        String knownResourceId = "00000010";
         getOrganization(knownResourceId)
                 .expectStatus().isOk()
                 .expectBody(new ParameterizedTypeReference<Map<String, String>>() {
@@ -140,18 +190,9 @@ class OrganizationsControllerTest {
                 .expectBody().isEmpty()
                 .getResponseHeaders().getLocation().getPath();
 
-        String location = path.substring(path.lastIndexOf('/') + 1);
+        String locationHeaderPath = path.substring(path.lastIndexOf('/') + 1);
 
-        Object resourceId = getOrganizations()
-                .expectStatus().isOk()
-                .expectBodyList(Map.class)
-                .returnResult().getResponseBody()
-                .stream()
-                .filter(o -> o.get("organizationId").equals("00000020"))
-                .findFirst().get()
-                .get("resourceId");
-
-        Assertions.assertEquals(resourceId, location);
+        Assertions.assertEquals(org.get("organizationId"), locationHeaderPath);
     }
 
     @DisplayName("POSTing the same organization twice should result in HTTP 409 (Conflict)")
@@ -209,12 +250,12 @@ class OrganizationsControllerTest {
     public void testPutOrganizations_updateResourceId_ignore() {
 
         Map<String, String> org = new HashMap<>();
-        org.put("organizationId", "00000020");
+        String myNewId = "my_new_id";
+        org.put("organizationId", myNewId);
         org.put("name", "Some New Organization");
-        org.put("resourceId", "newResourceId");
 
         // The controller will ignore the new resource ID.
-        putOrg(org, "resource1")
+        putOrg(org, "00002855")
                 .expectStatus().isOk();
 
         getOrganizations()
@@ -222,8 +263,8 @@ class OrganizationsControllerTest {
                 })
                 .hasSize(2)
                 .consumeWith(orgs -> {
-                    long count = orgs.getResponseBody().stream().filter(o -> !o.get("resourceId").equals("newResourceId")).count();
-                    Assertions.assertEquals(2, count);
+                    long count = orgs.getResponseBody().stream().filter(o -> o.get("organizationId").equals(myNewId)).count();
+                    Assertions.assertEquals(0, count);
                 });
     }
 
