@@ -22,7 +22,7 @@ resource "aws_dynamodb_table" "startup_sample_table" {
 
 ## TODO: Document this.
 
-resource "aws_dynamodb_table" "startup_sample_table2" {
+resource "aws_dynamodb_table" "organization_table" {
   name           = "Organization"
   hash_key       = "id"
   read_capacity  = 1

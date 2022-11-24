@@ -1,7 +1,7 @@
 # ecs.tf
 
 resource "aws_ecs_cluster" "main" {
-  name               = "sample-cluster"
+  name               = "organizations-api-cluster"
   capacity_providers = ["FARGATE_SPOT"]
 
   default_capacity_provider_strategy {
@@ -14,9 +14,9 @@ resource "aws_ecs_cluster" "main" {
 
 resource "aws_ecs_task_definition" "app" {
   count                    = local.create_ecs_service
-  family                   = "sample-app-task"
+  family                   = "organizations-api-task"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-  task_role_arn            = aws_iam_role.sample_app_container_role.arn
+  task_role_arn            = aws_iam_role.organizations_api_container_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.fargate_cpu
@@ -68,7 +68,7 @@ resource "aws_ecs_task_definition" "app" {
 
 resource "aws_ecs_service" "main" {
   count                             = local.create_ecs_service
-  name                              = "sample-service"
+  name                              = "organizations-api-service"
   cluster                           = aws_ecs_cluster.main.id
   task_definition                   = aws_ecs_task_definition.app[count.index].arn
   desired_count                     = var.app_count

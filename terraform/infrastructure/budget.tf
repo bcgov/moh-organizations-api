@@ -1,7 +1,7 @@
 
 resource "aws_budgets_budget" "cost" {
 
-  name              = "startup-sample-monthly"
+  name              = "organization-api-monthly"
   budget_type       = "COST"
   limit_amount      = var.budget_amount
   limit_unit        = "USD"
@@ -17,7 +17,7 @@ resource "aws_budgets_budget" "cost" {
   }
 
   cost_filters = {
-    TagKeyValue = "user:Project$Startup Sample"
+    TagKeyValue = "user:Project$Organizations Api"
   }
 }
 
