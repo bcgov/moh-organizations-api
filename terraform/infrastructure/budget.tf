@@ -14,6 +14,7 @@ resource "aws_budgets_budget" "cost" {
     threshold_type            = "PERCENTAGE"
     notification_type         = "FORECASTED"
     subscriber_sns_topic_arns = [aws_sns_topic.billing_alert_topic.arn]
+    subscriber_email_addresses = ["nathaniel.coster@cgi.com","adam.hoplock@cgi.com","david.a.sharpe@cgi.com","filip.florek@cgi.com"]
   }
 
   cost_filters = {
