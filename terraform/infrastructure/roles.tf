@@ -49,8 +49,8 @@ resource "aws_iam_role_policy" "ecs_task_execution_cwlogs" {
 EOF
 }
 
-resource "aws_iam_role" "sample_app_container_role" {
-  name = "sample_app_container_role"
+resource "aws_iam_role" "organizations_api_container_role" {
+  name = "organizations_api_container_role"
 
   assume_role_policy = <<EOF
 {
@@ -71,9 +71,9 @@ EOF
   tags = local.common_tags
 }
 
-resource "aws_iam_role_policy" "sample_app_container_cwlogs" {
-  name = "sample_app_container_cwlogs"
-  role = aws_iam_role.sample_app_container_role.id
+resource "aws_iam_role_policy" "organizations_api_container_cwlogs" {
+  name = "organizations_api_container_cwlogs"
+  role = aws_iam_role.organizations_api_container_role.id
 
   policy = <<-EOF
   {
@@ -97,7 +97,7 @@ EOF
 }
 resource "aws_iam_role_policy" "ssp_bucket_policy" {
   name   = "upload_bucket_policy"
-  role   = aws_iam_role.sample_app_container_role.id
+  role   = aws_iam_role.organizations_api_container_role.id
   policy = <<-EOF
   {
     "Version": "2012-10-17",
@@ -124,9 +124,9 @@ resource "aws_iam_role_policy" "ssp_bucket_policy" {
 }
 
 
-resource "aws_iam_role_policy" "sample_app_dynamodb" {
-  name = "sample_app_dynamodb"
-  role = aws_iam_role.sample_app_container_role.id
+resource "aws_iam_role_policy" "dynamodb_sample_table_role_policy" {
+  name = "dynamodb_sample_table_role_policy"
+  role = aws_iam_role.organizations_api_container_role.id
 
   policy = jsonencode(
   {
@@ -156,9 +156,9 @@ resource "aws_iam_role_policy" "sample_app_dynamodb" {
 
 ## TODO: Document this
 
-resource "aws_iam_role_policy" "sample_app_dynamodb2" {
-  name = "sample_app_dynamodb2"
-  role = aws_iam_role.sample_app_container_role.id
+resource "aws_iam_role_policy" "dynamodb_organizations_table_role_policy" {
+  name = "dynamodb_organizations_table_role_policy"
+  role = aws_iam_role.organizations_api_container_role.id
 
   policy = jsonencode(
     {
@@ -179,7 +179,7 @@ resource "aws_iam_role_policy" "sample_app_dynamodb2" {
             "dynamodb:Update*",
             "dynamodb:PutItem"
           ],
-          "Resource": "${aws_dynamodb_table.startup_sample_table2.arn}"
+          "Resource": "${aws_dynamodb_table.organization_table.arn}"
         }
       ]
     }
