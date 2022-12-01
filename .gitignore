@@ -3,6 +3,13 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+terraform-dev/.terraform
+terraform-dev/.terraform.lock.hcl
+terraform-test/.terraform
+terraform-test/.terraform.lock.hcl
+terraform-prod/.terraform
+terraform-prod/.terraform.lock.hcl
+
 
 ### STS ###
 .apt_generated
