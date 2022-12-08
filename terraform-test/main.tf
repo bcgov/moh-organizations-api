@@ -42,7 +42,7 @@ module "containers" {
   target_env = var.environment
   target_aws_account_id = "787619965950"
   cloudfront = true
-  cloudfront_origin_domain = "startup-sample-project.cey5wq-test-test.nimbus.cloud.gov.bc.ca"
-  service_names = ["startup-sample-project"]
+  cloudfront_origin_domain = "organizations-api.cey5wq-test.nimbus.cloud.gov.bc.ca"
+  service_names = ["organizations-api"]
   app_image = local.app_image
 }

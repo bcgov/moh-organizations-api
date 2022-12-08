@@ -102,7 +102,7 @@ variable "common_tags" {
 
 variable "service_names" {
   description = "List of service names to use as subdomains"
-  default     = ["startup-sample-project", "ssp"]
+  default     = ["organizations-api", "org-api"]
   type        = list(string)
 }
 
