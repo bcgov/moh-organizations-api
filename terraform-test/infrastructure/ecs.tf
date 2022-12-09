@@ -49,6 +49,10 @@ resource "aws_ecs_task_definition" "app" {
         {
           name  = "bucketName",
           value = aws_s3_bucket.upload_bucket.id
+        },
+        {
+          name = "KEYCLOAK_AUTH_URL",
+          value = "https://common-logon-test.hlth.gov.bc.ca/auth/realms/moh_applications"
         }
       ]
       logConfiguration = {
