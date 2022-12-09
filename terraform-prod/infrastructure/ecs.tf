@@ -52,7 +52,7 @@ resource "aws_ecs_task_definition" "app" {
         },
         {
           name = "KEYCLOAK_AUTH_URL",
-          value = "https://common-logon-prod.hlth.gov.bc.ca/auth/realms/moh_applications"
+          value = "https://common-logon.hlth.gov.bc.ca/auth/realms/moh_applications"
         }
       ]
       logConfiguration = {
