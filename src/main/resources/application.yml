@@ -19,8 +19,7 @@ spring:
           jwk-set-uri: ${base-oauth-url}/protocol/openid-connect/certs
 server:
   port: 80
-#base-oauth-url: http://localhost:8080/realms/master
-base-oauth-url: https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications
+base-oauth-url: ${KEYCLOAK_AUTH_URL}
 organization-api-client-id: ORGANIZATIONS-API
 amazon:
   dynamodb:
