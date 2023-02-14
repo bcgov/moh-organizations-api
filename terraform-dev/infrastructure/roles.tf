@@ -124,38 +124,6 @@ resource "aws_iam_role_policy" "ssp_bucket_policy" {
 }
 
 
-resource "aws_iam_role_policy" "dynamodb_sample_table_role_policy" {
-  name = "dynamodb_sample_table_role_policy"
-  role = aws_iam_role.organizations_api_container_role.id
-
-  policy = jsonencode(
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-          "Effect": "Allow",
-          "Action": [
-              "dynamodb:BatchGet*",
-              "dynamodb:DescribeStream",
-              "dynamodb:DescribeTable",
-              "dynamodb:Get*",
-              "dynamodb:Query",
-              "dynamodb:Scan",
-              "dynamodb:BatchWrite*",
-              "dynamodb:CreateTable",
-              "dynamodb:Delete*",
-              "dynamodb:Update*",
-              "dynamodb:PutItem"
-          ],
-          "Resource": "${aws_dynamodb_table.startup_sample_table.arn}"
-        }
-    ]
-  }
-  )
-}
-
-## TODO: Document this
-
 resource "aws_iam_role_policy" "dynamodb_organizations_table_role_policy" {
   name = "dynamodb_organizations_table_role_policy"
   role = aws_iam_role.organizations_api_container_role.id
@@ -185,5 +153,3 @@ resource "aws_iam_role_policy" "dynamodb_organizations_table_role_policy" {
     }
   )
 }
-
-## END TODO

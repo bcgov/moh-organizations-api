@@ -16,7 +16,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 public class OrganizationsController {
@@ -28,7 +30,7 @@ public class OrganizationsController {
     public OrganizationsController(OrganizationRepository organizationRepository, AmazonDynamoDB amazonDynamoDB) {
         this.organizationRepository = organizationRepository;
 
-        DynamoDBMapper  dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
+        DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
 
         try {
             CreateTableRequest tableRequest = dynamoDBMapper
@@ -54,7 +56,7 @@ public class OrganizationsController {
     public Collection<Organization> getOrganizations() {
         Collection<Organization> list = new ArrayList<>();
         organizationRepository.findAll().forEach(list::add);
-        return list;
+        return list.stream().sorted(Comparator.comparing(org -> Integer.valueOf(org.getOrganizationId()))).collect(Collectors.toList());
     }
 
     @PostMapping(value = "/organizations", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -79,6 +81,16 @@ public class OrganizationsController {
                     existingOrganization.setOrganizationId(updatedOrganization.getOrganizationId());
                     existingOrganization.setOrganizationName(updatedOrganization.getOrganizationName());
                     organizationRepository.save(existingOrganization);
+                    return ResponseEntity.ok().build();
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping(value = "/organizations/{organizationId}")
+    public ResponseEntity<Object> deleteOrganization(@PathVariable String organizationId) {
+        return organizationRepository.findByOrganizationId(organizationId)
+                .map(existingOrganization -> {
+                    organizationRepository.deleteById(existingOrganization.getOrganizationId());
                     return ResponseEntity.ok().build();
                 })
                 .orElse(ResponseEntity.notFound().build());
