@@ -59,7 +59,7 @@ variable "health_check_path" {
   ## TODO: Document this
   default = "/health"
   ## END TODO
-#  default = "/"
+  #  default = "/"
 }
 
 variable "fargate_cpu" {

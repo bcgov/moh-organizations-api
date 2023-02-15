@@ -5,6 +5,7 @@ resource "aws_ecs_cluster" "main" {
   capacity_providers = ["FARGATE_SPOT"]
 
   default_capacity_provider_strategy {
+    base              = 0
     capacity_provider = "FARGATE_SPOT"
     weight            = 100
   }
@@ -51,7 +52,7 @@ resource "aws_ecs_task_definition" "app" {
           value = aws_s3_bucket.upload_bucket.id
         },
         {
-          name = "KEYCLOAK_AUTH_URL",
+          name  = "KEYCLOAK_AUTH_URL",
           value = "https://common-logon.hlth.gov.bc.ca/auth/realms/moh_applications"
         }
       ]

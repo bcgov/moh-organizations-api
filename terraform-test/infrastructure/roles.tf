@@ -19,6 +19,26 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
 
   tags = local.common_tags
+
+  inline_policy {
+    name = "ecs_task_execution_cwlogs"
+    policy = jsonencode(
+      {
+        Statement = [
+          {
+            Action = [
+              "logs:CreateLogGroup",
+            ]
+            Effect = "Allow"
+            Resource = [
+              "arn:aws:logs:*:*:*",
+            ]
+          },
+        ]
+        Version = "2012-10-17"
+      }
+    )
+  }
 }
 
 # ECS task execution role policy attachment
@@ -69,6 +89,80 @@ resource "aws_iam_role" "organizations_api_container_role" {
 EOF
 
   tags = local.common_tags
+  inline_policy {
+    name = "dynamodb_organizations_table_role_policy"
+    policy = jsonencode(
+      {
+        Statement = [
+          {
+            Action = [
+              "dynamodb:BatchGet*",
+              "dynamodb:DescribeStream",
+              "dynamodb:DescribeTable",
+              "dynamodb:Get*",
+              "dynamodb:Query",
+              "dynamodb:Scan",
+              "dynamodb:BatchWrite*",
+              "dynamodb:CreateTable",
+              "dynamodb:Delete*",
+              "dynamodb:Update*",
+              "dynamodb:PutItem",
+            ]
+            Effect   = "Allow"
+            Resource = "arn:aws:dynamodb:ca-central-1:787619965950:table/Organization"
+          },
+        ]
+        Version = "2012-10-17"
+      }
+    )
+  }
+  inline_policy {
+    name = "organizations_api_container_cwlogs"
+    policy = jsonencode(
+      {
+        Statement = [
+          {
+            Action = [
+              "logs:CreateLogGroup",
+              "logs:CreateLogStream",
+              "logs:PutLogEvents",
+              "logs:DescribeLogStreams",
+            ]
+            Effect = "Allow"
+            Resource = [
+              "arn:aws:logs:*:*:*",
+            ]
+          },
+        ]
+        Version = "2012-10-17"
+      }
+    )
+  }
+  inline_policy {
+    name = "upload_bucket_policy"
+    policy = jsonencode(
+      {
+        Statement = [
+          {
+            Action = [
+              "s3:PutObject",
+              "s3:GetObject",
+              "kms:Decrypt",
+              "kms:Encrypt",
+              "s3:PutBucketCORS",
+            ]
+            Effect = "Allow"
+            Resource = [
+              "arn:aws:s3:::upload-bucket-super-shark",
+              "arn:aws:s3:::upload-bucket-super-shark/*",
+              "arn:aws:kms:*:787619965950:key/*",
+            ]
+          },
+        ]
+        Version = "2012-10-17"
+      }
+    )
+  }
 }
 
 resource "aws_iam_role_policy" "organizations_api_container_cwlogs" {
@@ -129,11 +223,11 @@ resource "aws_iam_role_policy" "dynamodb_organizations_table_role_policy" {
 
   policy = jsonencode(
     {
-      "Version": "2012-10-17",
-      "Statement": [
+      "Version" : "2012-10-17",
+      "Statement" : [
         {
-          "Effect": "Allow",
-          "Action": [
+          "Effect" : "Allow",
+          "Action" : [
             "dynamodb:BatchGet*",
             "dynamodb:DescribeStream",
             "dynamodb:DescribeTable",
@@ -146,7 +240,7 @@ resource "aws_iam_role_policy" "dynamodb_organizations_table_role_policy" {
             "dynamodb:Update*",
             "dynamodb:PutItem"
           ],
-          "Resource": "${aws_dynamodb_table.organization_table.arn}"
+          "Resource" : "${aws_dynamodb_table.organization_table.arn}"
         }
       ]
     }
