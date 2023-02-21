@@ -9,7 +9,7 @@ terraform-test/.terraform
 terraform-test/.terraform.lock.hcl
 terraform-prod/.terraform
 terraform-prod/.terraform.lock.hcl
-
+/native-libs/
 
 ### STS ###
 .apt_generated

@@ -1,12 +1,6 @@
 package ca.bc.hlth.mohorganizations;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
-import com.amazonaws.services.dynamodbv2.model.ResourceInUseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,23 +19,22 @@ public class OrganizationsController {
 
     OrganizationRepository organizationRepository;
 
-    Logger logger = LoggerFactory.getLogger(OrganizationsController.class);
-
     public OrganizationsController(OrganizationRepository organizationRepository, AmazonDynamoDB amazonDynamoDB) {
         this.organizationRepository = organizationRepository;
 
-        DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
-
-        try {
-            CreateTableRequest tableRequest = dynamoDBMapper
-                    .generateCreateTableRequest(Organization.class);
-            tableRequest.setProvisionedThroughput(
-                    new ProvisionedThroughput(1L, 1L));
-            amazonDynamoDB.createTable(tableRequest);
-        } catch (ResourceInUseException e) {
-            // TODO: Figure out how we should actually handle this.
-            logger.info("Exception expected if table already exists.", e);
-        }
+        // TODO: Could be used for local development
+//        DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
+//
+//        try {
+//            CreateTableRequest tableRequest = dynamoDBMapper
+//                    .generateCreateTableRequest(Organization.class);
+//            tableRequest.setProvisionedThroughput(
+//                    new ProvisionedThroughput(1L, 1L));
+//            amazonDynamoDB.createTable(tableRequest);
+//        } catch (ResourceInUseException e) {
+//            // TODO: Figure out how we should actually handle this.
+//            logger.info("Exception expected if table already exists.", e);
+//        }
 
     }
 
@@ -78,7 +71,8 @@ public class OrganizationsController {
     public ResponseEntity<Object> putOrganization(@RequestBody Organization updatedOrganization, @PathVariable String resourceId) {
         return organizationRepository.findByOrganizationId(resourceId)
                 .map(existingOrganization -> {
-                    existingOrganization.setOrganizationId(updatedOrganization.getOrganizationId());
+                    // Ignore the any new organization IDs. Only organization name may be updated.
+//                    existingOrganization.setOrganizationId(updatedOrganization.getOrganizationId());
                     existingOrganization.setOrganizationName(updatedOrganization.getOrganizationName());
                     organizationRepository.save(existingOrganization);
                     return ResponseEntity.ok().build();
