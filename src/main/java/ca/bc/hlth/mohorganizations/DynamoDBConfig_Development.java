@@ -29,7 +29,7 @@ public class DynamoDBConfig_Development {
 
     @Bean
     public AmazonDynamoDB amazonDynamoDB() {
-        // TODO You really have to deal with this. One if for local and the other isn't.
+        // TODO Deal with this. One if for local and the other isn't.
         AmazonDynamoDB amazonDynamoDB
                 = new AmazonDynamoDBClient(amazonAWSCredentials());
 
@@ -38,7 +38,6 @@ public class DynamoDBConfig_Development {
         }
 
         return amazonDynamoDB;
-//        return new AmazonDynamoDBClient().withRegion(Region.getRegion(Regions.CA_CENTRAL_1));
     }
 
     @Bean

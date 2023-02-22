@@ -16,8 +16,8 @@ Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "organizationId": "1130",
-  "name": "Yet another one"
+  "organizationId": "12345",
+  "name": "September 20th, 7:21PM"
 }
 
 ### Get an organization.
@@ -25,11 +25,10 @@ GET {{api}}/130
 Authorization: Bearer {{auth_token}}
 
 ### Update an organization. The resource ID must exist.
-PUT {{api}}/9631a9ae-fd44-408a-8df6-3904d403dada
+PUT {{api}}/1130
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "id": "12345678",
-  "name": "Hi Dad"
+  "name": "Only three orgs still"
 }

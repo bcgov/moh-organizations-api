@@ -56,8 +56,6 @@ public class OrganizationsController {
     public ResponseEntity<Object> putOrganization(@RequestBody Organization updatedOrganization, @PathVariable String resourceId) {
         return organizationRepository.findByOrganizationId(resourceId)
                 .map(existingOrganization -> {
-                    // Ignore the any new organization IDs. Only organization name may be updated.
-//                    existingOrganization.setOrganizationId(updatedOrganization.getOrganizationId());
                     existingOrganization.setOrganizationName(updatedOrganization.getOrganizationName());
                     organizationRepository.save(existingOrganization);
                     return ResponseEntity.ok().build();
