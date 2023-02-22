@@ -21,21 +21,6 @@ public class OrganizationsController {
 
     public OrganizationsController(OrganizationRepository organizationRepository, AmazonDynamoDB amazonDynamoDB) {
         this.organizationRepository = organizationRepository;
-
-        // TODO: Could be used for local development
-//        DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
-//
-//        try {
-//            CreateTableRequest tableRequest = dynamoDBMapper
-//                    .generateCreateTableRequest(Organization.class);
-//            tableRequest.setProvisionedThroughput(
-//                    new ProvisionedThroughput(1L, 1L));
-//            amazonDynamoDB.createTable(tableRequest);
-//        } catch (ResourceInUseException e) {
-//            // TODO: Figure out how we should actually handle this.
-//            logger.info("Exception expected if table already exists.", e);
-//        }
-
     }
 
     @GetMapping(value = "/organizations/{resourceId}", produces = MediaType.APPLICATION_JSON_VALUE)

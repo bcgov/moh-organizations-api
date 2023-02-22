@@ -280,6 +280,21 @@ class OrganizationsControllerTest {
                 .expectStatus().isNotFound();
     }
 
+    @DisplayName("DELETE should return 200 if organization was deleted and 404 on GET")
+    @Test
+    public void testDeleteOrganization_deleteAndGet() {
+        String knowResourceId = "00002855";
+        deleteOrg(knowResourceId).expectStatus().isOk();
+        getOrganization(knowResourceId).expectStatus().isNotFound();
+    }
+
+    @DisplayName("DELETE should return 404 if organization does not exist")
+    @Test
+    public void testDeleteOrganization_doesNotExist_404() {
+        String fakeResourceId = "99900001";
+        deleteOrg(fakeResourceId).expectStatus().isNotFound();
+    }
+
     private WebTestClient.ResponseSpec putOrg(Map<String, String> org, String location) {
         return webClient.put()
                 .uri(urlUnderTest + "/{resource-id}", location)
@@ -311,6 +326,14 @@ class OrganizationsControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(org)
+                .exchange();
+    }
+
+    private WebTestClient.ResponseSpec deleteOrg(String knownResourceId) {
+        return webClient.delete()
+                .uri(urlUnderTest + "/{resource-id}", knownResourceId)
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON)
                 .exchange();
     }
 
