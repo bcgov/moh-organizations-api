@@ -1,11 +1,7 @@
 name: Deploy Dev
 
 on:
-  workflow_run:
-    workflows:
-      - Push Docker Image to ECR
-    types:
-      - completed
+  workflow_dispatch
 
 env:
   IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
@@ -23,9 +19,7 @@ jobs:
 
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
+        uses: actions/checkout@v3
 
       - uses: hashicorp/setup-terraform@v1
         with:
