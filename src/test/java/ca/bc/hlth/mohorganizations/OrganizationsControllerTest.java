@@ -35,15 +35,12 @@ import java.util.Map;
 @SuppressWarnings({"ConstantConditions", "OptionalGetWithoutIsPresent"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-// TODO: Look up how this works. Is "test" a default profile? Without it, it didn't load the config file.
 @ActiveProfiles("test")
 class OrganizationsControllerTest {
 
     private static final JSONParser jsonParser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
 
-    // The credentials used to retrieve an access token.
-    // e.g. client_id=PIDP-SERVICE&client_secret=some_secret&scope=email&grant_type=client_credentials
-    // e.g. client_id=admin-cli&username=admin&password=admin&grant_type=some_password
+    // The credentials used to retrieve an access token. See readme for more info.
     @Value("${ORGANIZATIONS_API_TOKEN_CREDENTIALS}")
     private String credentials;
     @Value("${ORGANIZATIONS_API_TOKEN_URL}")
@@ -73,7 +70,6 @@ class OrganizationsControllerTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         String amazonAWSAccessKey = "access_key";
         String amazonAWSSecretKey = "secret_key";
