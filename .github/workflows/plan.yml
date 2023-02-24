@@ -19,8 +19,8 @@ jobs:
         with:
           terraform_version: ~1.3.7
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
-          working-directory: ${{ env.TFC_WORKSPACE }}
 
       - name: Terraform Plan
         id: plan
+        working-directory: ${{ env.TFC_WORKSPACE }}
         run: terraform plan -no-color -input=false
