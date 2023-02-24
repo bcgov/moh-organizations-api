@@ -8,8 +8,7 @@ jobs:
     name: "Terraform"
     runs-on: ubuntu-latest
     env:
-        TG_SRC_PATH: terraform
-        TFC_WORKSPACE: cey5wq-dev
+        TFC_WORKSPACE: terraform-dev
         
     steps:
       - name: Checkout
@@ -20,7 +19,7 @@ jobs:
         with:
           terraform_version: ~1.3.7
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
-          working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
+          working-directory: ${{ env.TFC_WORKSPACE }}
 
       - name: Terraform Plan
         id: plan
