@@ -23,4 +23,6 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: ${{ env.TFC_WORKSPACE }}
-        run: terraform plan -no-color -input=false
+        run: | 
+          terraform init 
+          terraform plan -no-color -input=false
