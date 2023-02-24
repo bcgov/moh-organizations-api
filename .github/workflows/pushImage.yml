@@ -1,7 +1,12 @@
-name: Push Docker Image to ECR
+name: Build and Push Image to ECR
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      tag:
+        type: string
+        description: "Docker Image Tag. Please follow versioning pattern: versionX.Y.Z"
+        required: true
 
 jobs:
 
@@ -34,7 +39,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ssp
-          IMAGE_TAG: latest
+          IMAGE_TAG: ${{ github.event.inputs.tag }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
