@@ -1,0 +1,41 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      target-environment:
+        type: string
+        description: "Please select target environment"
+        required: true
+        options: 
+        - dev
+        - test
+        - prod
+
+jobs:
+  plan:
+    name: "Terraform Plan"
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{inputs.target-environment}}
+    env:
+        TFC_WORKSPACE: terraform-${{inputs.target-environment}}
+        
+    steps:
+      - run: echo "Target environment - ${{inputs.target-environment}}"
+      
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ~1.1.9
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: ${{ env.TFC_WORKSPACE }}
+        run: | 
+          terraform init 
+          terraform plan -input=false
