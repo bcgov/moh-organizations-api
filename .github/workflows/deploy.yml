@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy Organizations-API
 
 on:
   workflow_dispatch:
@@ -61,8 +61,8 @@ jobs:
           terraform_version: ~1.1.9
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
-      - name: Terraform Plan
-        id: plan
+      - name: Terraform Apply
+        id: apply
         working-directory: ${{ env.TFC_WORKSPACE }}
         run: | 
           terraform init 
