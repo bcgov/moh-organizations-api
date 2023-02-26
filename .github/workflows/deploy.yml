@@ -46,7 +46,7 @@ jobs:
     environment:
       name: ${{inputs.target-environment}}
     env:
-        TFC_WORKSPACE: terraform-dev
+        TFC_WORKSPACE: terraform-${{inputs.target-environment}}
         
     steps:
       - run: echo "Target environment - ${{inputs.target-environment}}"
