@@ -27,6 +27,10 @@ public class Organization {
         return organizationId;
     }
 
+    public void setOrganizationId(String id) {
+        this.organizationId = id;
+    }
+
     @DynamoDBAttribute
     public String getOrganizationName() {
         return organizationName;
