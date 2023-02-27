@@ -1,0 +1,70 @@
+name: Deploy Organizations-API
+
+on:
+  workflow_dispatch:
+    inputs:
+      target-environment:
+        type: choice
+        description: "Please select target environment"
+        required: true
+        options: 
+        - dev
+        - test
+        - prod
+
+jobs:
+  plan:
+    name: "Terraform Plan on ${{inputs.target-environment}} environment"
+    runs-on: ubuntu-latest
+    env:
+        TFC_WORKSPACE: terraform-${{inputs.target-environment}}
+        
+    steps:
+      - run: echo "Target environment - ${{inputs.target-environment}}"
+      - run: echo "Working directory - ${{ env.TFC_WORKSPACE }}"
+      
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ~1.1.9
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: ${{ env.TFC_WORKSPACE }}
+        run: | 
+          terraform init 
+          terraform plan -input=false
+          
+  apply:
+    needs: plan
+    name: "Terraform Apply to ${{inputs.target-environment}} environment"
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{inputs.target-environment}}
+    env:
+        TFC_WORKSPACE: terraform-${{inputs.target-environment}}
+        
+    steps:
+      - run: echo "Target environment - ${{inputs.target-environment}}"
+      - run: echo "Working directory - ${{ env.TFC_WORKSPACE }}"
+      
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ~1.1.9
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+      - name: Terraform Apply
+        id: apply
+        working-directory: ${{ env.TFC_WORKSPACE }}
+        run: | 
+          terraform init 
+          terraform apply -auto-approve -input=false
+
