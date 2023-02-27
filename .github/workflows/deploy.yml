@@ -14,7 +14,7 @@ on:
 
 jobs:
   plan:
-    name: "Terraform Plan on ${{inputs.target-environment}} environment"
+    name: "Terraform Plan on ${{inputs.target-environment}} env"
     runs-on: ubuntu-latest
     env:
         TFC_WORKSPACE: terraform-${{inputs.target-environment}}
@@ -41,7 +41,7 @@ jobs:
           
   apply:
     needs: plan
-    name: "Terraform Apply to ${{inputs.target-environment}} environment"
+    name: "Terraform Apply to ${{inputs.target-environment}} env"
     runs-on: ubuntu-latest
     environment:
       name: ${{inputs.target-environment}}
