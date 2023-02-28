@@ -29,7 +29,6 @@ public class DynamoDBConfig_Development {
 
     @Bean
     public AmazonDynamoDB amazonDynamoDB() {
-        // TODO Deal with this. One if for local and the other isn't.
         AmazonDynamoDB amazonDynamoDB
                 = new AmazonDynamoDBClient(amazonAWSCredentials());
 
