@@ -5,7 +5,7 @@ locals {
   #  environment      = reverse(split("/", get_terragrunt_dir()))[0]
   #  app_image        = "646101433301.dkr.ecr.ca-central-1.amazonaws.com/ssp/sha256:36bf8b4342d35f4aa242e0d440f6edcfbed98bfe703a8a35d5f745f674135788"
   #  app_image        = "646101433301.dkr.ecr.ca-central-1.amazonaws.com/ssp:e7757cf7bf4bb3c593a172ef77d1c19186433ac6"
-  app_image = "646101433301.dkr.ecr.ca-central-1.amazonaws.com/ssp:filip"
+  app_image = "646101433301.dkr.ecr.ca-central-1.amazonaws.com/ssp:filip7"
 }
 
 variable "environment" {
