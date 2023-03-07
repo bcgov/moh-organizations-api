@@ -104,7 +104,7 @@ Location: http://localhost:8082/organizations/12345678
 Requires a token with `get-org`.
 
 ```http
-GET /organizations/{{resource-id}}
+GET /organizations/{{organization-id}}
 Authorization: Bearer {{auth_token}}
 
 RESPONSE: HTTP 200
@@ -118,10 +118,10 @@ RESPONSE: HTTP 200
 
 Requires a token with `add-org`.
 
-The resource ID must exist.
+The organization ID must exist.
 
 ```http
-PUT /organizations/{{resource-id}}
+PUT /organizations/{{organization-id}}
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
@@ -133,12 +133,12 @@ RESPONSE: HTTP 200
 
 #### Delete an organization
 
-Requires a token with `add-org`.
+Requires a token with `delete-org`.
 
-The resource ID must exist.
+The organization ID must exist.
 
 ```http
-DELETE /organizations/{{resource-id}}
+DELETE /organizations/{{organization-id}}
 Authorization: Bearer {{auth_token}}
 
 RESPONSE: HTTP 200

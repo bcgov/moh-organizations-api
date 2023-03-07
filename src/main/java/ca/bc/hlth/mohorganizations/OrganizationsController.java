@@ -27,9 +27,9 @@ public class OrganizationsController {
         this.organizationRepository = organizationRepository;
     }
 
-    @GetMapping(value = "/organizations/{resourceId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Organization> getOrganizationById(@PathVariable String resourceId) {
-        return organizationRepository.findByOrganizationId(resourceId)
+    @GetMapping(value = "/organizations/{organizationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Organization> getOrganizationById(@PathVariable String organizationId) {
+        return organizationRepository.findByOrganizationId(organizationId)
                 .map((ResponseEntity::ok))
                 .orElseGet(() -> ResponseEntity.of(Optional.empty()));
     }
@@ -50,16 +50,16 @@ public class OrganizationsController {
                     organizationRepository.save(organization);
                     URI location = ServletUriComponentsBuilder
                             .fromCurrentRequest()
-                            .path("/{resourceId}")
+                            .path("/{organizationId}")
                             .buildAndExpand(organization.getOrganizationId())
                             .toUri();
                     return ResponseEntity.created(location).build();
                 });
     }
 
-    @PutMapping(value = "/organizations/{resourceId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> putOrganization(@RequestBody Organization updatedOrganization, @PathVariable String resourceId) {
-        return organizationRepository.findByOrganizationId(resourceId)
+    @PutMapping(value = "/organizations/{organizationId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> putOrganization(@RequestBody Organization updatedOrganization, @PathVariable String organizationId) {
+        return organizationRepository.findByOrganizationId(organizationId)
                 .map(existingOrganization -> {
                     existingOrganization.setOrganizationName(updatedOrganization.getOrganizationName());
                     organizationRepository.save(existingOrganization);
