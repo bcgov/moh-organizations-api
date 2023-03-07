@@ -1,10 +1,6 @@
 package ca.bc.hlth.mohorganizations;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
-import com.amazonaws.services.dynamodbv2.model.ResourceInUseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -29,25 +25,11 @@ public class OrganizationsController {
 
     public OrganizationsController(OrganizationRepository organizationRepository, AmazonDynamoDB amazonDynamoDB) {
         this.organizationRepository = organizationRepository;
-
-        DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
-
-        try {
-            CreateTableRequest tableRequest = dynamoDBMapper
-                    .generateCreateTableRequest(Organization.class);
-            tableRequest.setProvisionedThroughput(
-                    new ProvisionedThroughput(1L, 1L));
-            amazonDynamoDB.createTable(tableRequest);
-        } catch (ResourceInUseException e) {
-            // TODO: Figure out how we should actually handle this.
-            logger.info("Exception expected if table already exists.", e);
-        }
-
     }
 
-    @GetMapping(value = "/organizations/{resourceId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Organization> getOrganizationById(@PathVariable String resourceId) {
-        return organizationRepository.findByOrganizationId(resourceId)
+    @GetMapping(value = "/organizations/{organizationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Organization> getOrganizationById(@PathVariable String organizationId) {
+        return organizationRepository.findByOrganizationId(organizationId)
                 .map((ResponseEntity::ok))
                 .orElseGet(() -> ResponseEntity.of(Optional.empty()));
     }
@@ -68,18 +50,17 @@ public class OrganizationsController {
                     organizationRepository.save(organization);
                     URI location = ServletUriComponentsBuilder
                             .fromCurrentRequest()
-                            .path("/{resourceId}")
+                            .path("/{organizationId}")
                             .buildAndExpand(organization.getOrganizationId())
                             .toUri();
                     return ResponseEntity.created(location).build();
                 });
     }
 
-    @PutMapping(value = "/organizations/{resourceId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> putOrganization(@RequestBody Organization updatedOrganization, @PathVariable String resourceId) {
-        return organizationRepository.findByOrganizationId(resourceId)
+    @PutMapping(value = "/organizations/{organizationId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> putOrganization(@RequestBody Organization updatedOrganization, @PathVariable String organizationId) {
+        return organizationRepository.findByOrganizationId(organizationId)
                 .map(existingOrganization -> {
-                    existingOrganization.setOrganizationId(updatedOrganization.getOrganizationId());
                     existingOrganization.setOrganizationName(updatedOrganization.getOrganizationName());
                     organizationRepository.save(existingOrganization);
                     return ResponseEntity.ok().build();
