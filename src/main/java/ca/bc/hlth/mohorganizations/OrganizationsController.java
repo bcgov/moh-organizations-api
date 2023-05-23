@@ -43,7 +43,6 @@ public class OrganizationsController {
 
     @PostMapping(value = "/organizations", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> addOrganization(@RequestBody Organization organization) {
-        logger.info("CI/CD demo. Add org endpoint was triggered " + organization.getOrganizationName());
         return organizationRepository.findByOrganizationId(organization.getOrganizationId())
                 .map(existingOrganization -> ResponseEntity.status(HttpStatus.CONFLICT).build()
                 ).orElseGet(() -> {
