@@ -30,6 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers(HttpMethod.PUT, "/organizations/{resourceId}").hasRole("add-org")
                 .mvcMatchers(HttpMethod.DELETE, "/organizations/{resourceId}").hasRole("delete-org")
                 .mvcMatchers(HttpMethod.GET, "/health").permitAll()
+                .mvcMatchers(HttpMethod.GET, "/zoom").permitAll()
                 .anyRequest().denyAll()
                 .and().cors()
                 .and().oauth2ResourceServer().jwt()
