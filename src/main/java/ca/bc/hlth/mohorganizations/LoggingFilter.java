@@ -19,20 +19,16 @@ public class LoggingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         LOGGER.info("{} : {}", request.getMethod(), request.getRequestURI());
         ContentCachingResponseWrapper cachedResponse = new ContentCachingResponseWrapper(response);
-
         filterChain.doFilter(request, cachedResponse);
-
         int responseStatus = cachedResponse.getStatus();
-
 
         if (!isSuccessfulRequest(responseStatus)) {
             byte[] responseBody = cachedResponse.getContentAsByteArray();
-            LOGGER.warn("Completed : {}", responseStatus);
+            LOGGER.error("Error : {}", responseStatus);
             if(responseBody.length > 0){
-                LOGGER.warn("Response body : {}", new String(responseBody, StandardCharsets.UTF_8));
+                LOGGER.error("Response body : {}", new String(responseBody, StandardCharsets.UTF_8));
             }
         } else {
             LOGGER.info("Completed : {}", responseStatus);
