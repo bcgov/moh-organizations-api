@@ -19,6 +19,18 @@ public class LoggingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        if (isHealthCheck(request)) {
+            filterChain.doFilter(request, response);
+        } else {
+            logRequestAndResponse(request, response, filterChain);
+        }
+    }
+
+    private boolean isHealthCheck(HttpServletRequest request) {
+        return request.getRequestURI().equals("/health");
+    }
+
+    private void logRequestAndResponse(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         LOGGER.info("{} : {}", request.getMethod(), request.getRequestURI());
         ContentCachingResponseWrapper cachedResponse = new ContentCachingResponseWrapper(response);
         filterChain.doFilter(request, cachedResponse);
@@ -27,7 +39,7 @@ public class LoggingFilter extends OncePerRequestFilter {
         if (!isSuccessfulRequest(responseStatus)) {
             byte[] responseBody = cachedResponse.getContentAsByteArray();
             LOGGER.error("Error : {}", responseStatus);
-            if(responseBody.length > 0){
+            if (responseBody.length > 0) {
                 LOGGER.error("Response body : {}", new String(responseBody, StandardCharsets.UTF_8));
             }
         } else {
