@@ -155,8 +155,8 @@ EOF
             ]
             Effect = "Allow"
             Resource = [
-              "arn:aws:s3:::upload-bucket-mighty-duck",
-              "arn:aws:s3:::upload-bucket-mighty-duck/*",
+              "arn:aws:s3:::upload-bucket-decent-duck",
+              "arn:aws:s3:::upload-bucket-decent-duck/*",
               "arn:aws:kms:*:750307557100:key/*",
             ]
           },

@@ -14,12 +14,12 @@ variable "environment" {
 }
 
 terraform {
-  backend "remote" {
-    hostname     = "app.terraform.io"
-    organization = "bcgov"
-    workspaces {
-      name = "cey5wq-prod"
-    }
+  backend "s3" {
+    bucket         = "terraform-remote-state-cey5wq-prod"
+    key            = "org-api-prod-tfstate"
+    region         = "ca-central-1"
+    dynamodb_table = "terraform-remote-state-lock-cey5wq"
+    encrypt        = true
   }
 }
 
