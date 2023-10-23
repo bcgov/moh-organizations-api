@@ -64,8 +64,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ca-central-1
-          role-to-assume: arn:aws:iam::750307557100:role/CGI_dev_Automation_Admin_Role
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_AUTOMATION_ROLE }}
           role-session-name: terraform-apply-job
 
       - name: Terraform Apply
