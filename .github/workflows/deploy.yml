@@ -11,14 +11,14 @@ on:
         - dev
         - test
         - prod
-permissions:
-  id-token: write
-  contents: read
 
 jobs:
   plan:
     name: "Terraform Plan on ${{inputs.target-environment}} env"
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     env:
         TFC_WORKSPACE: terraform-${{inputs.target-environment}}
         
@@ -52,6 +52,9 @@ jobs:
     needs: plan
     name: "Terraform Apply to ${{inputs.target-environment}} env"
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     environment:
       name: ${{inputs.target-environment}}
     env:
