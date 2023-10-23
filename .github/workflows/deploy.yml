@@ -74,7 +74,7 @@ jobs:
         with:
           aws-region: ${{ secrets.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_DEV_ROLE }}
-          role-session-name: terraform-plan-job
+          role-session-name: terraform-apply-job
 
       - name: Terraform Apply
         id: apply
