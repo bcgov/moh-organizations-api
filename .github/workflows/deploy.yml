@@ -35,7 +35,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ secrets.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_AUTOMATION_ROLE }}
+          role-to-assume: ${{ secrets.AWS_DEV_ROLE }}
           role-session-name: terraform-plan-job
 
       - name: Terraform Plan
@@ -65,7 +65,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ secrets.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_AUTOMATION_ROLE }}
+          role-to-assume: ${{ secrets.AWS_DEV_ROLE }}
           role-session-name: terraform-apply-job
 
       - name: Terraform Apply
