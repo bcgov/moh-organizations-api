@@ -30,7 +30,13 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ~1.1.9
-          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_AUTOMATION_ROLE }}
+          role-session-name: terraform-plan-job
 
       - name: Terraform Plan
         id: plan
@@ -55,11 +61,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          terraform_version: ~1.1.9
-          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+          aws-region: ca-central-1
+          role-to-assume: arn:aws:iam::750307557100:role/CGI_dev_Automation_Admin_Role
+          role-session-name: terraform-apply-job
 
       - name: Terraform Apply
         id: apply
