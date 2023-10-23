@@ -11,6 +11,9 @@ on:
         - dev
         - test
         - prod
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   plan:
