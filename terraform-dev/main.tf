@@ -25,11 +25,6 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
-  assume_role {
-    # Copied from IAM console
-    role_arn = "arn:aws:iam::750307557100:role/BCGOV_dev_Automation_Admin_Role"
-    # role_arn = "arn:aws:iam::$${var.target_aws_account_id}:role/BCGOV_$${var.target_env}_Automation_Admin_Role"
-  }
 }
 
 variable "aws_region" {
