@@ -78,6 +78,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_DEV_ROLE }}
           role-session-name: terraform-apply-job
+          unset-current-credentials: true
 
       - name: Terraform Apply
         id: apply
