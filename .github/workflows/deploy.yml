@@ -16,13 +16,12 @@ permissions:
   id-token: write
   contents: read
 
-env:
-  TFC_WORKSPACE: terraform-${{inputs.target-environment}}
-
 jobs:
   plan:
     name: "Terraform Plan on ${{ inputs.target-environment }} env"
     runs-on: ubuntu-latest
+    env:
+      TFC_WORKSPACE: terraform-${{inputs.target-environment}}
         
     steps:
       - run: echo "Target environment - ${{ inputs.target-environment }}"
@@ -40,7 +39,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ secrets.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_${inputs.target-environment^^}_ROLE }}
+          role-to-assume: ${{ secrets[AWS_${inputs.target-environment^^}_ROLE] }}
           role-session-name: terraform-plan-job
 
       - name: Terraform Plan
@@ -54,6 +53,8 @@ jobs:
     needs: plan
     name: "Terraform Apply to ${{ inputs.target-environment }} env"
     runs-on: ubuntu-latest
+    env:
+      TFC_WORKSPACE: terraform-${{inputs.target-environment}}
     environment:
       name: ${{inputs.target-environment}}
         
@@ -73,7 +74,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ secrets.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_${inputs.target-environment^^}_ROLE }}
+          role-to-assume: ${{ secrets[AWS_${inputs.target-environment^^}_ROLE] }}
           role-session-name: terraform-apply-job
 
       - name: Terraform Apply
