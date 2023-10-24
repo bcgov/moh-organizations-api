@@ -22,11 +22,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TFC_WORKSPACE: terraform-${{inputs.target-environment}}
+    environment:
+      name: ${{inputs.target-environment}}
         
     steps:
       - run: echo "Target environment - ${{ inputs.target-environment }}"
       - run: echo "Working directory - ${{ env.TFC_WORKSPACE }}"
-      - run: echo "AWS_${{ inputs.target-environment^^ }}_ROLE"
       
       - name: Checkout
         uses: actions/checkout@v3
@@ -40,7 +41,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ secrets.AWS_REGION }}
-          role-to-assume: ${{ secrets[AWS_${{ inputs.target-environment^^ }}_ROLE] }}
+          role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE }}
           role-session-name: terraform-plan-job
 
       - name: Terraform Plan
@@ -75,7 +76,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ secrets.AWS_REGION }}
-          role-to-assume: ${{ secrets[AWS_${{ inputs.target-environment^^ }}_ROLE] }}
+          role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE }}
           role-session-name: terraform-apply-job
 
       - name: Terraform Apply
