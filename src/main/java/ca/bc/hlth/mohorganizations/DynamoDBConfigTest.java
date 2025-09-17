@@ -2,21 +2,16 @@ package ca.bc.hlth.mohorganizations;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.util.StringUtils;
 
 @Configuration
-@EnableDynamoDBRepositories(basePackages = "ca.bc.hlth.mohorganizations")
-@Profile({"local", "test"})
-public class DynamoDBConfig_Development {
+@Profile("test")
+public class DynamoDBConfigTest {
 
     @Value("${amazon.dynamodb.endpoint}")
     private String amazonDynamoDBEndpoint;
@@ -29,10 +24,10 @@ public class DynamoDBConfig_Development {
 
     @Bean
     public AmazonDynamoDB amazonDynamoDB() {
-        AmazonDynamoDB amazonDynamoDB
-                = new AmazonDynamoDBClient(amazonAWSCredentials());
+        AmazonDynamoDB amazonDynamoDB =
+                new AmazonDynamoDBClient(amazonAWSCredentials());
 
-        if (!StringUtils.isEmpty(amazonDynamoDBEndpoint)) {
+        if (amazonDynamoDBEndpoint != null && !amazonDynamoDBEndpoint.isEmpty()) {
             amazonDynamoDB.setEndpoint(amazonDynamoDBEndpoint);
         }
 
@@ -41,7 +36,6 @@ public class DynamoDBConfig_Development {
 
     @Bean
     public AWSCredentials amazonAWSCredentials() {
-        return new BasicAWSCredentials(
-                amazonAWSAccessKey, amazonAWSSecretKey);
+        return new BasicAWSCredentials(amazonAWSAccessKey, amazonAWSSecretKey);
     }
 }
