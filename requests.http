@@ -21,14 +21,14 @@ Content-Type: application/json
 }
 
 ### Get an organization.
-GET {{api}}/130
+GET {{api}}/12345
 Authorization: Bearer {{auth_token}}
 
 ### Update an organization. The resource ID must exist.
-PUT {{api}}/130
+PUT {{api}}/12345
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "name": "Only three orgs still"
+  "name": "September 26th, 4:41AM"
 }

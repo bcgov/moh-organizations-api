@@ -1,12 +1,13 @@
 package ca.bc.hlth.mohorganizations;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
-import com.amazonaws.services.dynamodbv2.local.main.ServerRunner;
-import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import net.minidev.json.JSONObject;
@@ -16,12 +17,14 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import software.amazon.dynamodb.services.local.main.ServerRunner;
+import software.amazon.dynamodb.services.local.server.DynamoDBProxyServer;
 
 import java.io.IOException;
 import java.net.URI;
@@ -32,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings({"ConstantConditions", "OptionalGetWithoutIsPresent"})
+@SuppressWarnings({"OptionalGetWithoutIsPresent"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
@@ -58,28 +61,31 @@ class OrganizationsControllerTest {
 
     private static DynamoDBMapper dynamoDBMapper;
 
-    // https://www.baeldung.com/dynamodb-local-integration-tests
-    static {
-        System.setProperty("sqlite4java.library.path", "native-libs");
+    @BeforeAll
+    static void setUpDynamo() throws Exception {
         String port = "8000";
-        try {
-            DynamoDBProxyServer server = ServerRunner.createServerFromCommandLineArgs(
-                    new String[]{"-inMemory", "-port", port});
-            server.start();
+        String uri = "http://localhost:" + port;
+        DynamoDBProxyServer server = ServerRunner.createServerFromCommandLineArgs(
+                new String[]{"-inMemory", "-port", port});
+        server.start();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        AmazonDynamoDB amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
+                .withEndpointConfiguration(
+                        new AwsClientBuilder.EndpointConfiguration(uri, "us-west-2"))
+                .withCredentials(new AWSStaticCredentialsProvider(
+                        new BasicAWSCredentials(
+                                "accesskey",
+                                "secretkey"
+                        )
+                ))
+                .build();
 
-        String amazonAWSAccessKey = "access_key";
-        String amazonAWSSecretKey = "secret_key";
-        String amazonDynamoDBEndpoint = "http://localhost:8000/";
-
-        AmazonDynamoDBClient amazonDynamoDB = new AmazonDynamoDBClient(new BasicAWSCredentials(amazonAWSAccessKey, amazonAWSSecretKey));
-        amazonDynamoDB.setEndpoint(amazonDynamoDBEndpoint);
+        // Assign a mapper to the static field used in BeforeEach and AfterEach
         dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
 
-        CreateTableRequest tableRequest = dynamoDBMapper.generateCreateTableRequest(Organization.class);
+        // Initialize the Organization table
+        CreateTableRequest tableRequest =
+                dynamoDBMapper.generateCreateTableRequest(Organization.class);
         tableRequest.setProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
         amazonDynamoDB.createTable(tableRequest);
     }
@@ -179,7 +185,6 @@ class OrganizationsControllerTest {
         org.put("organizationId", "00000020");
         org.put("name", "Some New Organization");
 
-        @SuppressWarnings("ConstantConditions")
         String path = addOrg(org)
                 .expectStatus().isCreated()
                 .expectHeader().exists("Location")

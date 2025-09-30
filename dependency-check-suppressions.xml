@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+
+    <!-- commons-lang3 DoS (StackOverflowError) -->
+    <suppress>
+        <notes><![CDATA[Accepting risk: DoS via ClassUtils recursion.]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons-lang3@3\.17\.0$</packageUrl>
+        <cve>CVE-2025-48924</cve>
+    </suppress>
+
+    <!-- ion-java DoS (StackOverflowError) -->
+    <suppress>
+        <notes><![CDATA[Accepting risk: DoS via crafted Ion data.]]></notes>
+        <packageUrl regex="true">^pkg:maven/software\.amazon\.ion/ion-java@1\.0\.2$</packageUrl>
+        <cve>CVE-2024-21634</cve>
+    </suppress>
+
+    <!-- sqlite4java native libs (dev/test only via DynamoDBLocal) -->
+    <suppress>
+        <notes><![CDATA[
+      sqlite4java is only used by DynamoDBLocal in local/test; never run in prod.
+      Suppress all vulnerability names for these artifacts.
+    ]]></notes>
+        <gav regex="true">com\.almworks\.sqlite4java:.*</gav>
+        <vulnerabilityName regex="true">.*</vulnerabilityName>
+    </suppress>
+
+</suppressions>

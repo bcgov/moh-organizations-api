@@ -1,16 +1,14 @@
-FROM maven:3.6.0-jdk-11-slim AS build
-COPY src /usr/src/app/src
-COPY pom.xml /usr/src/app
-RUN mvn -f /usr/src/app/pom.xml clean package -DskipTests
+# Build with Maven + JDK 17
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /usr/src/app
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-FROM amazoncorretto:11-alpine-jdk as server
+# Runtime with Corretto 17
+FROM amazoncorretto:17-alpine-jdk AS runtime
+WORKDIR /app
 COPY --from=build /usr/src/app/target/*.jar app.jar
-#ARG JAR_FILE=target/*.jar
-#COPY ${JAR_FILE} app.jar
-
-FROM server as test
-RUN echo "Much test"
-
-FROM server as runtime
 EXPOSE 80
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]

@@ -25,5 +25,5 @@ amazon:
   dynamodb:
     endpoint: http://localhost:8000/
   aws:
-    accesskey: access_key
-    secretkey: secret_key
+    accesskey: accesskey
+    secretkey: secretkey
