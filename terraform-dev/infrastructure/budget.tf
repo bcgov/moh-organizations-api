@@ -17,8 +17,9 @@ resource "aws_budgets_budget" "cost" {
     subscriber_email_addresses = ["nathaniel.coster@cgi.com", "adam.hoplock@cgi.com", "david.a.sharpe@cgi.com", "filip.florek@cgi.com"]
   }
 
-  cost_filters = {
-    TagKeyValue = "user:Project$Organizations Api"
+  cost_filter {
+    name   = "TagKeyValue"
+    values = ["user:Project$Organizations Api"]
   }
 }
 

@@ -1,15 +1,7 @@
 # ecs.tf
 
 resource "aws_ecs_cluster" "main" {
-  name               = "organizations-api-cluster"
-  capacity_providers = ["FARGATE_SPOT"]
-
-  default_capacity_provider_strategy {
-    base              = 0
-    capacity_provider = "FARGATE_SPOT"
-    weight            = 100
-  }
-
+  name = "organizations-api-cluster"
   tags = local.common_tags
 }
 
