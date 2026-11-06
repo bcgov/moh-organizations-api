@@ -14,6 +14,20 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: kcd
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -22,6 +36,13 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    - name: Create the database role, schema and table
+      env:
+        PGHOST: localhost
+        PGDATABASE: kcd
+      run: |
+        PGPASSWORD=postgres psql -U postgres -v ON_ERROR_STOP=1 -v password=organizations_api -f db/create-role-and-schema.sql
+        PGPASSWORD=organizations_api psql -U organizations_api -v ON_ERROR_STOP=1 -f db/create-organization-table.sql
     - name: Build with Maven
       env: 
         ORGANIZATIONS_API_TOKEN_CREDENTIALS: ${{ secrets.ORGANIZATIONS_API_TOKEN_CREDENTIALS }}

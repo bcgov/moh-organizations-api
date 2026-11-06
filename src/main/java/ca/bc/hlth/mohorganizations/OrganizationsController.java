@@ -1,6 +1,5 @@
 package ca.bc.hlth.mohorganizations;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -23,7 +22,7 @@ public class OrganizationsController {
 
     Logger logger = LoggerFactory.getLogger(OrganizationsController.class);
 
-    public OrganizationsController(OrganizationRepository organizationRepository, AmazonDynamoDB amazonDynamoDB) {
+    public OrganizationsController(OrganizationRepository organizationRepository) {
         this.organizationRepository = organizationRepository;
     }
 

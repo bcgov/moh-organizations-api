@@ -1,2 +1,6 @@
 ORGANIZATIONS_API_TOKEN_URL: https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications/protocol/openid-connect/token
 ORGANIZATIONS_API_TOKEN_CREDENTIALS: ${ORGANIZATIONS_API_TOKEN_CREDENTIALS}
+# Postgres set up with the scripts in db/ (local podman container, or the service container in GitHub CI).
+organizations_db_url: jdbc:postgresql://localhost:5432/kcd
+organizations_db_username: organizations_api
+organizations_db_password: organizations_api
