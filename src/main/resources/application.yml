@@ -1,15 +1,13 @@
 spring:
   datasource:
-    url: jdbc:h2:./test;AUTO_SERVER=TRUE
-    driverClassName: org.h2.Driver
+    url: ${organizations_db_url}
+    username: ${organizations_db_username}
+    password: ${organizations_db_password}
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+      # The table is created outside the app (see db/). Hibernate only checks that it matches the entity.
+      ddl-auto: validate
+    open-in-view: false
 
   security:
     oauth2:
@@ -21,9 +19,3 @@ server:
   port: 80
 base-oauth-url: ${KEYCLOAK_AUTH_URL}
 organization-api-client-id: ORGANIZATIONS-API
-amazon:
-  dynamodb:
-    endpoint: http://localhost:8000/
-  aws:
-    accesskey: accesskey
-    secretkey: secretkey

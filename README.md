@@ -6,57 +6,86 @@ All resources require JWT authorization.
 
 ## Configuration
 
-Application configuration is specified in [application.yml](src/main/resources/application.yml). Of particular importance are:
+The app stores organizations in Postgres, in the table `organizations.organization`. The app never creates or
+changes tables: Hibernate only checks at startup that the table matches the entity (`ddl-auto: validate`), and the
+app won't start if it doesn't. The scripts that create the role, schema and table are in [db/](db).
 
-* `base-oauth-url`: the token issuer.
+Defaults are in [application.yml](src/main/resources/application.yml). On the servers, an external
+`application.yaml` in the service's working directory (from SVN, like UMS) supplies the environment's settings,
+and secrets come from environment variables. Settings of particular importance:
+
+* `organizations_db_url`, `organizations_db_username`, `organizations_db_password`: the Postgres connection.
+* `base-oauth-url`: the token issuer. Defaults to the `KEYCLOAK_AUTH_URL` environment variable.
 * `organization-api-client-id`: the client ID of this bearer-only client, used for `aud` validation. The client is
   expected to have `add-org` and `get-org` roles.
+* `server.port` and `server.ssl.*`: the port and HTTPS keystore. HTTPS is configured only on the servers.
 
 ## Run Locally
 
-To run with Maven:
+### 1. Start Postgres
+
+Any Postgres 17 works. With Podman (on Windows from WSL, use `podman.exe`) or Docker:
 
 ```bash
-mvn spring-boot:run
+podman run -d --name orgapi-pg -p 5432:5432 \
+  -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kcd \
+  docker.io/library/postgres:17
+
+# Role and schema (the DBA's part on the servers), as the postgres superuser
+podman exec -i orgapi-pg psql -U postgres -d kcd -v ON_ERROR_STOP=1 \
+  -v password=organizations_api < db/create-role-and-schema.sql
+
+# Table, as organizations_api
+podman exec -i orgapi-pg psql -U organizations_api -d kcd -v ON_ERROR_STOP=1 \
+  < db/create-organization-table.sql
 ```
 
-To run without Maven installed:
+JDBC URL for DBeaver or IntelliJ: `jdbc:postgresql://localhost:5432/kcd` (user and password `organizations_api`).
+
+After a reboot, start the container again with `podman start orgapi-pg`.
+
+### 2. Run the app
+
+The `local` profile ([application-local.yml](src/main/resources/application-local.yml)) points at the database
+above, uses the DEV Keycloak realm, and listens on plain HTTP port 8082.
 
 ```bash
-./mvnw spring-boot:run
-# or double-click mvnw.cmd on Windows
+mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
-To compile and then run with Java:
+Or build and run the jar:
 
 ```bash
 mvn package -DskipTests=true
-java -jar target/organizations-api.jar
+java -jar target/organizations-api.jar --spring.profiles.active=local
 ```
 
-## Environment variables
+To run without Maven installed, use `./mvnw` (or `mvnw.cmd` on Windows) instead of `mvn`.
 
-The application does not use environment variables, but to run the integration tests you will need to provide
-credentials for the token issuer.
-
-`ORGANIZATIONS_API_TOKEN_CREDENTIALS`
-
-Example values:
-
-* `client_id=SOME_CLIENT&client_secret=SOME_SECRET&grant_type=client_credentials`
-* `client_id=SOME_CLIENT&username=SOME_USER&password=SOME_PASSWORD&grant_type=password`
-
-The token issuer is specified by `ORGANIZATIONS_API_TOKEN_URL` in [application-test.yml](src/test/resources/application-test.yml).
+Check it's up: `GET http://localhost:8082/health` returns `Hello`.
 
 ## Running Tests
 
-To run just the tests, execute:
+The tests start the app against the local Postgres from step 1 (see
+[application-test.yml](src/test/resources/application-test.yml)) and get a real access token from the DEV Keycloak
+realm. Set these environment variables first:
+
+* `ORGANIZATIONS_API_TOKEN_CREDENTIALS`: credentials for the token request. Example values:
+  * `client_id=SOME_CLIENT&client_secret=SOME_SECRET&grant_type=client_credentials`
+  * `client_id=SOME_CLIENT&username=SOME_USER&password=SOME_PASSWORD&grant_type=password`
+* `KEYCLOAK_AUTH_URL`: `https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications`
+
+Then:
 
 ```bash
 mvn test
 ```
 
-During development you may also find the tests written for the IntelliJ HTTP Client useful. They are in [requests.http](requests.http).
+In GitHub Actions, the "Java CI with Maven" workflow starts its own Postgres container and runs the `db/` scripts
+before building.
+
+During development you may also find the tests written for the IntelliJ HTTP Client useful. They are in
+[requests.http](requests.http).
 
 ## API Reference
 
@@ -95,7 +124,7 @@ Content-Type: application/json
   "name": "Hi Mom"
 }
 
-RESPONSE: HTTP 200
+RESPONSE: HTTP 201
 Location: http://localhost:8082/organizations/12345678
 ```
 

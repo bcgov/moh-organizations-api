@@ -1,15 +1,5 @@
 package ca.bc.hlth.mohorganizations;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -23,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import software.amazon.dynamodb.services.local.main.ServerRunner;
-import software.amazon.dynamodb.services.local.server.DynamoDBProxyServer;
 
 import java.io.IOException;
 import java.net.URI;
@@ -59,51 +47,19 @@ class OrganizationsControllerTest {
 
     private String accessToken;
 
-    private static DynamoDBMapper dynamoDBMapper;
-
-    @BeforeAll
-    static void setUpDynamo() throws Exception {
-        String port = "8000";
-        String uri = "http://localhost:" + port;
-        DynamoDBProxyServer server = ServerRunner.createServerFromCommandLineArgs(
-                new String[]{"-inMemory", "-port", port});
-        server.start();
-
-        AmazonDynamoDB amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
-                .withEndpointConfiguration(
-                        new AwsClientBuilder.EndpointConfiguration(uri, "us-west-2"))
-                .withCredentials(new AWSStaticCredentialsProvider(
-                        new BasicAWSCredentials(
-                                "accesskey",
-                                "secretkey"
-                        )
-                ))
-                .build();
-
-        // Assign a mapper to the static field used in BeforeEach and AfterEach
-        dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
-
-        // Initialize the Organization table
-        CreateTableRequest tableRequest =
-                dynamoDBMapper.generateCreateTableRequest(Organization.class);
-        tableRequest.setProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
-        amazonDynamoDB.createTable(tableRequest);
-    }
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
     @BeforeEach
     public void beforeEach() {
-        Organization organization = new Organization("00000010", "MoH");
-        dynamoDBMapper.save(organization);
-        Organization organization2 = new Organization("00002855", "other");
-        dynamoDBMapper.save(organization2);
+        organizationRepository.save(new Organization("00000010", "MoH"));
+        organizationRepository.save(new Organization("00002855", "other"));
     }
 
     @AfterEach
     public void afterEach() {
-        PaginatedScanList<Organization> scan = dynamoDBMapper.scan(Organization.class, new DynamoDBScanExpression());
-        dynamoDBMapper.batchDelete(scan);
+        organizationRepository.deleteAll();
     }
-
 
     @BeforeAll
     public void init() throws Exception {
