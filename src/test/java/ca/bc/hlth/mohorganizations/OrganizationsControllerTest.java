@@ -296,18 +296,17 @@ class OrganizationsControllerTest {
                 .exchange();
     }
 
+    @SuppressWarnings("resource")
     private String getKcAccessToken() throws IOException, InterruptedException, ParseException {
 
-        HttpResponse<String> response;
-        try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(tokenUrl))
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .POST(HttpRequest.BodyPublishers.ofString(credentials))
-                    .build();
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        }
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(tokenUrl))
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(credentials))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         JSONObject responseBodyAsJson = (JSONObject) jsonParser.parse(response.body());
 
