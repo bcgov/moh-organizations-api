@@ -4,6 +4,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings({"OptionalGetWithoutIsPresent"})
+@SuppressWarnings({"OptionalGetWithoutIsPresent", "DataFlowIssue"})
+@ExtendWith(RequiredEnvironmentVariables.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
@@ -296,15 +298,16 @@ class OrganizationsControllerTest {
 
     private String getKcAccessToken() throws IOException, InterruptedException, ParseException {
 
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                // TODO: The URL should not be hardcoded, or at least it should not be buried down here.
-                .uri(URI.create(tokenUrl))
-                .header("Accept", "application/json")
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(HttpRequest.BodyPublishers.ofString(credentials))
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response;
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(tokenUrl))
+                    .header("Accept", "application/json")
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .POST(HttpRequest.BodyPublishers.ofString(credentials))
+                    .build();
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        }
 
         JSONObject responseBodyAsJson = (JSONObject) jsonParser.parse(response.body());
 

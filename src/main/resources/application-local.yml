@@ -1,8 +1,17 @@
 # Local development against a Postgres set up with the scripts in db/ (see README).
 # Run with: mvn spring-boot:run -Dspring-boot.run.profiles=local
-organizations_db_url: jdbc:postgresql://localhost:5432/kcd
-organizations_db_username: organizations_api
-organizations_db_password: organizations_api
-base-oauth-url: https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications
+# To use the DEV database instead, copy the datasource settings from DEV/application.yaml in SVN.
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/kcd?currentSchema=organizations
+    username: organizations_api
+    password: organizations_api
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications
+          jwk-set-uri: https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications/protocol/openid-connect/certs
+organization-api-client-id: ORGANIZATIONS-API
 server:
   port: 8082

@@ -14,8 +14,9 @@ Defaults are in [application.yml](src/main/resources/application.yml). On the se
 `application.yaml` in the service's working directory (from SVN, like UMS) supplies the environment's settings,
 and secrets come from environment variables. Settings of particular importance:
 
-* `organizations_db_url`, `organizations_db_username`, `organizations_db_password`: the Postgres connection.
-* `base-oauth-url`: the token issuer. Defaults to the `KEYCLOAK_AUTH_URL` environment variable.
+* `spring.datasource.url`, `.username`, `.password`: the Postgres connection. The password comes from the
+  `ORGANIZATIONS_API_DATABASE_PASSWORD` environment variable on the servers.
+* `spring.security.oauth2.resourceserver.jwt.issuer-uri` and `.jwk-set-uri`: the Keycloak realm that issues the tokens.
 * `organization-api-client-id`: the client ID of this bearer-only client, used for `aud` validation. The client is
   expected to have `add-org` and `get-org` roles.
 * `server.port` and `server.ssl.*`: the port and HTTPS keystore. HTTPS is configured only on the servers.
@@ -68,12 +69,11 @@ Check it's up: `GET http://localhost:8082/health` returns `Hello`.
 
 The tests start the app against the local Postgres from step 1 (see
 [application-test.yml](src/test/resources/application-test.yml)) and get a real access token from the DEV Keycloak
-realm. Set these environment variables first:
+realm. Set this environment variable first:
 
 * `ORGANIZATIONS_API_TOKEN_CREDENTIALS`: credentials for the token request. Example values:
   * `client_id=SOME_CLIENT&client_secret=SOME_SECRET&grant_type=client_credentials`
   * `client_id=SOME_CLIENT&username=SOME_USER&password=SOME_PASSWORD&grant_type=password`
-* `KEYCLOAK_AUTH_URL`: `https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications`
 
 Then:
 
