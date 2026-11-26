@@ -1,16 +1,21 @@
 package ca.bc.hlth.mohorganizations;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-@DynamoDBTable(tableName = "Organization")
+@Entity
+@Table(name = "organization", schema = "organizations")
 public class Organization {
 
-    @DynamoDBHashKey(attributeName = "id")
+    @Id
+    @Column(name = "organization_id")
     @JsonProperty("organizationId")
     private String organizationId;
+
+    @Column(name = "name")
     @JsonProperty("name")
     private String organizationName;
 
@@ -22,7 +27,6 @@ public class Organization {
         this.organizationName = name;
     }
 
-    @DynamoDBAttribute
     public String getOrganizationId() {
         return organizationId;
     }
@@ -31,7 +35,6 @@ public class Organization {
         this.organizationId = id;
     }
 
-    @DynamoDBAttribute
     public String getOrganizationName() {
         return organizationName;
     }

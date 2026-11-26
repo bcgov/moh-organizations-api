@@ -1,11 +1,6 @@
 {
   "properties": [
     {
-      "name": "base-oauth-url",
-      "type": "java.lang.String",
-      "description": "The Keycloak realm that issues tokens accepted by this resource server."
-    },
-    {
       "name": "organization-api-client-id",
       "type": "java.lang.String",
       "description": "The Keycloak client ID of this bearer-only client."
