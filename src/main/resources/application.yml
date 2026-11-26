@@ -4,3 +4,10 @@ spring:
       # The table is created outside the app (see db/). Hibernate only checks that it matches the entity.
       ddl-auto: validate
     open-in-view: false
+
+app:
+  # Filled in by Maven resource filtering (spring-boot-starter-parent), used by banner.txt
+  version: '@project.version@'
+  git-branch: '@git.branch@'
+  git-commit: '@git.commit.id.abbrev@'
+  git-dirty: '@git.dirty@'
